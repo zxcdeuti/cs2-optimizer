@@ -1,0 +1,7 @@
+<UserControl x:Class="CS2Optimizer.Views.WatermarkBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             TextOptions.TextFormattingMode="Display" UseLayoutRounding="True" SnapsToDevicePixels="True">
+    <!-- Content is built in code: look, layout and visible metrics are all user-configurable. -->
+    <Border x:Name="Root"/>
+</UserControl>

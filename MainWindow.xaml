@@ -1,0 +1,106 @@
+<Window x:Class="CS2Optimizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="clr-namespace:CS2Optimizer.Views"
+        Title="CS2 Optimizer" Icon="Assets/app.ico" Width="1220" Height="800" MinWidth="960" MinHeight="560"
+        WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="CanResize"
+        Background="{StaticResource BgBrush}" Foreground="{StaticResource TextBrush}"
+        FontFamily="{StaticResource UiFont}" UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="44" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
+    <Grid x:Name="RootGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="236"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="20,20,0,0" Height="32">
+                    <Image Source="{StaticResource AppLogo}" Width="30" Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <TextBlock Text="CS2" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="17"
+                               VerticalAlignment="Center" Margin="12,0,0,0"/>
+                    <TextBlock Text="/OPT" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="17"
+                               Foreground="{StaticResource DimBrush}" VerticalAlignment="Center"/>
+                    <TextBlock Text="v2.1" Style="{StaticResource Label}" Margin="10,3,0,0"/>
+                </StackPanel>
+
+                <Rectangle DockPanel.Dock="Top" Style="{StaticResource Hairline}" Margin="0,22,0,14"/>
+
+                <!-- footer: live hardware line -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="20,0,20,20">
+                    <Rectangle Style="{StaticResource Hairline}" Margin="-20,0,-20,16"/>
+                    <TextBlock Text="УСТРОЙСТВО" Style="{StaticResource Label}"/>
+                    <TextBlock x:Name="FooterGpu" Text="…" Style="{StaticResource Label}" Foreground="{StaticResource MutedBrush}"
+                               Margin="0,8,0,0" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock x:Name="FooterDisplay" Text="" Style="{StaticResource Label}" Foreground="{StaticResource MutedBrush}"
+                               Margin="0,3,0,0"/>
+                </StackPanel>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                <StackPanel>
+                    <TextBlock Text="ОПТИМИЗАЦИЯ" Style="{StaticResource Label}" Margin="20,6,0,8"/>
+                    <RadioButton x:Name="Nav_system" Style="{StaticResource NavButton}" GroupName="nav" Tag="system" IsChecked="True" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="01" Style="{StaticResource NavNum}"/><TextBlock Text="Система"/></StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="Nav_graphics" Style="{StaticResource NavButton}" GroupName="nav" Tag="graphics" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="02" Style="{StaticResource NavNum}"/><TextBlock Text="Графика"/></StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="Nav_launch" Style="{StaticResource NavButton}" GroupName="nav" Tag="launch" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="03" Style="{StaticResource NavNum}"/><TextBlock Text="Параметры запуска"/></StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="Nav_cleanup" Style="{StaticResource NavButton}" GroupName="nav" Tag="cleanup" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="04" Style="{StaticResource NavNum}"/><TextBlock Text="Очистка фона"/></StackPanel>
+                    </RadioButton>
+
+                    <TextBlock Text="ИГРА" Style="{StaticResource Label}" Margin="20,22,0,8"/>
+                    <RadioButton x:Name="Nav_crosshair" Style="{StaticResource NavButton}" GroupName="nav" Tag="crosshair" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="05" Style="{StaticResource NavNum}"/><TextBlock Text="Прицел"/></StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="Nav_sens" Style="{StaticResource NavButton}" GroupName="nav" Tag="sens" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="06" Style="{StaticResource NavNum}"/><TextBlock Text="Сенса и мышь"/></StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="Nav_config" Style="{StaticResource NavButton}" GroupName="nav" Tag="config" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="07" Style="{StaticResource NavNum}"/><TextBlock Text="Конфиг autoexec"/></StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="Nav_maps" Style="{StaticResource NavButton}" GroupName="nav" Tag="maps" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="08" Style="{StaticResource NavNum}"/><TextBlock Text="Карты"/></StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="Nav_watermark" Style="{StaticResource NavButton}" GroupName="nav" Tag="watermark" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="09" Style="{StaticResource NavNum}"/><TextBlock Text="Ватермарка"/></StackPanel>
+                    </RadioButton>
+
+                    <TextBlock Text="ПРИЛОЖЕНИЕ" Style="{StaticResource Label}" Margin="20,22,0,8"/>
+                    <RadioButton x:Name="Nav_settings" Style="{StaticResource NavButton}" GroupName="nav" Tag="settings" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="10" Style="{StaticResource NavNum}"/><TextBlock Text="Настройки"/></StackPanel>
+                    </RadioButton>
+                </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- Content -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" WindowChrome.IsHitTestVisibleInChrome="True">
+                <Button Style="{StaticResource ChromeButton}" Content="&#xE921;" Tag="#1C1C1E" Click="Min_Click"/>
+                <Button Style="{StaticResource ChromeButton}" Content="&#xE922;" Tag="#1C1C1E" Click="Max_Click"/>
+                <Button Style="{StaticResource ChromeButton}" Content="&#xE8BB;" Tag="#E81123" Click="Close_Click"/>
+            </StackPanel>
+
+            <ContentControl x:Name="Host" Grid.Row="1">
+                <ContentControl.RenderTransform>
+                    <TranslateTransform x:Name="HostShift"/>
+                </ContentControl.RenderTransform>
+            </ContentControl>        </Grid>
+    </Grid>
+</Window>

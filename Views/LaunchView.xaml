@@ -1,0 +1,69 @@
+<UserControl x:Class="CS2Optimizer.Views.LaunchView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="48,6,48,48">
+            <TextBlock Text="03 / ПАРАМЕТРЫ ЗАПУСКА" Style="{StaticResource Eyebrow}"/>
+            <TextBlock Text="Строка запуска" Style="{StaticResource H1}"/>
+            <TextBlock Text="Отметь нужное — строка соберётся ниже. Вставь её в Steam: Библиотека → ПКМ по CS2 → Свойства → Общие → Параметры запуска."
+                       Style="{StaticResource Lead}"/>
+            <Rectangle Style="{StaticResource PageRule}"/>
+
+            <Grid Margin="0,0,0,28">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="СЕЙЧАС В STEAM" Style="{StaticResource Label}"/>
+                <TextBlock x:Name="CurrentText" Grid.Column="1" FontFamily="{StaticResource MonoFont}" FontSize="13"
+                           Foreground="{StaticResource TextBrush}" TextWrapping="Wrap"/>
+            </Grid>
+
+            <Grid Margin="44,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="ПАРАМЕТР" Style="{StaticResource Label}"/>
+                <TextBlock Grid.Column="1" Text="КОМАНДА" Style="{StaticResource Label}"/>
+            </Grid>
+            <Rectangle Style="{StaticResource Hairline}"/>
+            <ItemsControl x:Name="OptionList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,15">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="44"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="200"/>
+                                </Grid.ColumnDefinitions>
+                                <CheckBox Style="{StaticResource Tick}" IsChecked="{Binding IsOn}" Click="Option_Click" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                                <StackPanel Grid.Column="1" Margin="0,0,24,0">
+                                    <TextBlock Text="{Binding Option.Title}" FontSize="14.5" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Option.Hint}" Style="{StaticResource Muted}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="2" Text="{Binding Option.Flag}" FontFamily="{StaticResource MonoFont}" FontSize="12.5"
+                                           Foreground="{StaticResource AccentBrush}" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <DockPanel Margin="0,32,0,10">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button Style="{StaticResource SecondaryButton}" Click="OpenSteam_Click" Margin="0,0,8,0" Content="Открыть CS2 в Steam"/>
+                    <Button Style="{StaticResource PrimaryButton}" Click="Copy_Click">
+                        <TextBlock x:Name="CopyText" Text="Копировать строку"/>
+                    </Button>
+                </StackPanel>
+                <TextBlock Text="ИТОГОВАЯ СТРОКА" Style="{StaticResource Label}"/>
+            </DockPanel>
+            <TextBox x:Name="ResultBox" Style="{StaticResource CodeBox}"/>
+            <TextBlock Style="{StaticResource Muted}" Margin="0,10,0,0"
+                       Text="Steam хранит строку у себя и перезаписывает свой файл, поэтому приложение её только показывает — вставить нужно вручную."/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

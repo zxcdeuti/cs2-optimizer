@@ -1,0 +1,38 @@
+<UserControl x:Class="CS2Optimizer.Views.ConfigView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="48,6,48,48">
+            <TextBlock Text="07 / КОНФИГ" Style="{StaticResource Eyebrow}"/>
+            <TextBlock Text="Конфиг autoexec" Style="{StaticResource H1}"/>
+            <TextBlock Text="Отметь строки, которые нужны в конфиге, и выстави значения. Приложение пишет их отдельным блоком — твои строки в autoexec.cfg не трогаются."
+                       Style="{StaticResource Lead}"/>
+            <Rectangle Style="{StaticResource PageRule}"/>
+
+            <Grid Margin="44,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="280"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="НАСТРОЙКА" Style="{StaticResource Label}"/>
+                <TextBlock Grid.Column="1" Text="ЗНАЧЕНИЕ" Style="{StaticResource Label}"/>
+            </Grid>
+            <Rectangle Style="{StaticResource Hairline}"/>
+            <StackPanel x:Name="Rows"/>
+
+            <DockPanel Margin="0,32,0,10">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button Style="{StaticResource SecondaryButton}" Click="Copy_Click" Margin="0,0,8,0">
+                        <TextBlock x:Name="CopyText" Text="Копировать"/>
+                    </Button>
+                    <Button Style="{StaticResource PrimaryButton}" Click="Save_Click" Content="Сохранить в autoexec.cfg"/>
+                </StackPanel>
+                <TextBlock Text="БЛОК КОНФИГА" Style="{StaticResource Label}"/>
+            </DockPanel>
+            <TextBox x:Name="Preview" Style="{StaticResource CodeBox}" AcceptsReturn="True"/>
+            <TextBlock x:Name="HintText" Style="{StaticResource Muted}" Margin="0,10,0,0"
+                       Text="Чтобы конфиг применялся при каждом запуске, в параметрах запуска нужен +exec autoexec (раздел 03)."/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

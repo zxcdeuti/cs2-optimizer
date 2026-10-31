@@ -1,0 +1,162 @@
+<UserControl x:Class="CS2Optimizer.Views.CrosshairView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
+    <UserControl.Resources>
+        <Style x:Key="RowLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="RowValue" TargetType="TextBlock" BasedOn="{StaticResource Num}">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="PresetButton" TargetType="Button" BasedOn="{StaticResource SecondaryButton}">
+            <Setter Property="Padding" Value="11,6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0,0,6,6"/>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="48,6,48,48">
+            <TextBlock Text="05 / ПРИЦЕЛ" Style="{StaticResource Eyebrow}"/>
+            <TextBlock Text="Конструктор прицела" Style="{StaticResource H1}"/>
+            <TextBlock Text="Команда для консоли собирается на лету. Формат команд — после обновления прицела в сентябре 2026."
+                       Style="{StaticResource Lead}"/>
+            <Rectangle Style="{StaticResource PageRule}"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.1*"/>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Preview -->
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <WrapPanel DockPanel.Dock="Right">
+                            <RadioButton Style="{StaticResource Chip}" GroupName="bg" Content="Сетка" Tag="grid" IsChecked="True" Checked="Bg_Checked"/>
+                            <RadioButton Style="{StaticResource Chip}" GroupName="bg" Content="Песок" Tag="#C4A271" Checked="Bg_Checked"/>
+                            <RadioButton Style="{StaticResource Chip}" GroupName="bg" Content="Небо" Tag="#8FB3D3" Checked="Bg_Checked"/>
+                            <RadioButton Style="{StaticResource Chip}" GroupName="bg" Content="Стена" Tag="#E6E1D6" Checked="Bg_Checked" Margin="0,0,0,6"/>
+                        </WrapPanel>
+                        <TextBlock Text="ПРЕВЬЮ" Style="{StaticResource Label}"/>
+                    </DockPanel>
+
+                    <Grid DockPanel.Dock="Bottom" Margin="0,14,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="40"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="УВЕЛИЧЕНИЕ" Style="{StaticResource Label}" Margin="0,0,16,0"/>
+                        <Slider x:Name="ZoomSlider" Grid.Column="1" Minimum="1" Maximum="10" Value="6" ValueChanged="Changed"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource RowValue}" Text="{Binding Value, ElementName=ZoomSlider, StringFormat={}{0}×}"/>
+                    </Grid>
+
+                    <Border x:Name="PreviewBg" MinHeight="360" CornerRadius="4" BorderBrush="{StaticResource LineBrush}" BorderThickness="1"
+                            ClipToBounds="True" Background="#0E0E0F" SizeChanged="Preview_SizeChanged">
+                        <Grid>
+                            <Rectangle x:Name="GridOverlay" Fill="{StaticResource GridBrush}"/>
+                            <Canvas x:Name="Preview" RenderOptions.EdgeMode="Aliased" SnapsToDevicePixels="True"/>
+                            <TextBlock Text="ПРИМЕРНЫЙ ВИД · В ИГРЕ ЗАВИСИТ ОТ РАЗРЕШЕНИЯ" Style="{StaticResource Label}"
+                                       HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="12,0,0,10"/>
+                        </Grid>
+                    </Border>
+                </DockPanel>
+
+                <!-- Settings -->
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="ГОТОВЫЕ" Style="{StaticResource Label}" Margin="0,0,0,10"/>
+                    <WrapPanel>
+                        <Button Style="{StaticResource PresetButton}" Content="Мой лучший" Tag="best" Click="Preset_Click"/>
+                        <Button Style="{StaticResource PresetButton}" Content="Зелёный" Tag="green" Click="Preset_Click"/>
+                        <Button Style="{StaticResource PresetButton}" Content="Мощный" Tag="power" Click="Preset_Click"/>
+                        <Button Style="{StaticResource PresetButton}" Content="T-жёлтый" Tag="tyellow" Click="Preset_Click"/>
+                        <Button Style="{StaticResource PresetButton}" Content="Розовый" Tag="pink" Click="Preset_Click"/>
+                    </WrapPanel>
+
+                    <TextBlock Text="ФОРМА" Style="{StaticResource Label}" Margin="0,22,0,4"/>
+                    <Rectangle Style="{StaticResource Hairline}"/>
+                    <Grid Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="110"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="36"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="36"/>
+                            <RowDefinition Height="36"/>
+                            <RowDefinition Height="36"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Длина" Style="{StaticResource RowLabel}"/>
+                        <Slider x:Name="LenSlider" Grid.Column="1" Minimum="0" Maximum="15" Value="2" ValueChanged="Changed"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource RowValue}" Text="{Binding Value, ElementName=LenSlider}"/>
+                        <TextBlock Grid.Row="1" Text="Толщина" Style="{StaticResource RowLabel}"/>
+                        <Slider x:Name="ThickSlider" Grid.Row="1" Grid.Column="1" Minimum="1" Maximum="6" Value="1" ValueChanged="Changed"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource RowValue}" Text="{Binding Value, ElementName=ThickSlider}"/>
+                        <TextBlock Grid.Row="2" Text="Промежуток" Style="{StaticResource RowLabel}"/>
+                        <Slider x:Name="GapSlider" Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="10" Value="1" ValueChanged="Changed"/>
+                        <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource RowValue}" Text="{Binding Value, ElementName=GapSlider}"/>
+                    </Grid>
+                    <CheckBox x:Name="DotToggle" Style="{StaticResource Toggle}" Content="Точка в центре" Click="Changed"/>
+                    <CheckBox x:Name="TToggle" Style="{StaticResource Toggle}" Content="T-образный, без верхней линии" Click="Changed"/>
+                    <CheckBox x:Name="OutlineToggle" Style="{StaticResource Toggle}" Content="Чёрная обводка" Click="Changed"/>
+
+                    <TextBlock Text="ЦВЕТ" Style="{StaticResource Label}" Margin="0,22,0,4"/>
+                    <Rectangle Style="{StaticResource Hairline}" Margin="0,0,0,12"/>
+                    <WrapPanel>
+                        <Button Style="{StaticResource Swatch}" Background="#00FFFF" Tag="0,255,255" Click="Swatch_Click" ToolTip="Голубой"/>
+                        <Button Style="{StaticResource Swatch}" Background="#00FF00" Tag="0,255,0" Click="Swatch_Click" ToolTip="Зелёный"/>
+                        <Button Style="{StaticResource Swatch}" Background="#FFFF00" Tag="255,255,0" Click="Swatch_Click" ToolTip="Жёлтый"/>
+                        <Button Style="{StaticResource Swatch}" Background="#FF00FF" Tag="255,0,255" Click="Swatch_Click" ToolTip="Розовый"/>
+                        <Button Style="{StaticResource Swatch}" Background="#FF3030" Tag="255,48,48" Click="Swatch_Click" ToolTip="Красный"/>
+                        <Button Style="{StaticResource Swatch}" Background="#FFFFFF" Tag="255,255,255" Click="Swatch_Click" ToolTip="Белый"/>
+                    </WrapPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="110"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="36"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="34"/>
+                            <RowDefinition Height="34"/>
+                            <RowDefinition Height="34"/>
+                            <RowDefinition Height="34"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="R" Style="{StaticResource RowLabel}" FontFamily="{StaticResource MonoFont}"/>
+                        <Slider x:Name="RSlider" Grid.Column="1" Maximum="255" Value="0" ValueChanged="Changed"/>
+                        <TextBlock Grid.Column="2" Style="{StaticResource RowValue}" Text="{Binding Value, ElementName=RSlider}"/>
+                        <TextBlock Grid.Row="1" Text="G" Style="{StaticResource RowLabel}" FontFamily="{StaticResource MonoFont}"/>
+                        <Slider x:Name="GSlider" Grid.Row="1" Grid.Column="1" Maximum="255" Value="255" ValueChanged="Changed"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource RowValue}" Text="{Binding Value, ElementName=GSlider}"/>
+                        <TextBlock Grid.Row="2" Text="B" Style="{StaticResource RowLabel}" FontFamily="{StaticResource MonoFont}"/>
+                        <Slider x:Name="BSlider" Grid.Row="2" Grid.Column="1" Maximum="255" Value="255" ValueChanged="Changed"/>
+                        <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource RowValue}" Text="{Binding Value, ElementName=BSlider}"/>
+                        <TextBlock Grid.Row="3" Text="Прозрачность" Style="{StaticResource RowLabel}"/>
+                        <Slider x:Name="ASlider" Grid.Row="3" Grid.Column="1" Minimum="30" Maximum="255" Value="255" ValueChanged="Changed"/>
+                        <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource RowValue}" Text="{Binding Value, ElementName=ASlider}"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+
+            <!-- Output -->
+            <DockPanel Margin="0,36,0,10">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button Style="{StaticResource SecondaryButton}" Click="Copy_Click" Margin="0,0,8,0">
+                        <TextBlock x:Name="CopyText" Text="Копировать"/>
+                    </Button>
+                    <Button Style="{StaticResource PrimaryButton}" Click="SaveAutoexec_Click" Content="В autoexec.cfg"/>
+                </StackPanel>
+                <TextBlock Text="КОМАНДА ДЛЯ КОНСОЛИ" Style="{StaticResource Label}"/>
+            </DockPanel>
+            <TextBox x:Name="CommandBox" Style="{StaticResource CodeBox}"/>
+            <TextBlock x:Name="HintText" Style="{StaticResource Muted}" Margin="0,10,0,0"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

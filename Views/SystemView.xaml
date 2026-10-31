@@ -1,0 +1,90 @@
+<UserControl x:Class="CS2Optimizer.Views.SystemView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Loaded="OnLoaded">
+    <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="48,6,48,48">
+            <TextBlock Text="01 / СИСТЕМА" Style="{StaticResource Eyebrow}"/>
+            <TextBlock Text="Состояние системы" Style="{StaticResource H1}"/>
+            <TextBlock Text="Железо и настройки Windows, от которых зависит FPS и задержка в CS2." Style="{StaticResource Lead}"/>
+            <Rectangle Style="{StaticResource PageRule}"/>
+
+            <!-- Score -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <TextBlock x:Name="ScoreOk" Text="–" Style="{StaticResource Num}" FontSize="76" FontWeight="Light" LineHeight="70"
+                               LineStackingStrategy="BlockLineHeight"/>
+                    <TextBlock x:Name="ScoreTotal" Text="/–" Style="{StaticResource Num}" FontSize="32" FontWeight="Light"
+                               Foreground="{StaticResource DimBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="28,0,0,6" VerticalAlignment="Bottom">
+                    <TextBlock Text="ПРОВЕРОК ПРОЙДЕНО" Style="{StaticResource Label}"/>
+                    <TextBlock x:Name="ScoreTitle" Text="Сканирую…" Style="{StaticResource H2}" Margin="0,6,0,0"/>
+                    <TextBlock x:Name="ScoreSub" Text="" Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                </StackPanel>
+                <Button Grid.Column="2" Style="{StaticResource SecondaryButton}" Click="Refresh_Click" VerticalAlignment="Bottom" Margin="0,0,0,6"
+                        Content="Проверить снова"/>
+            </Grid>
+
+            <!-- Checks -->
+            <TextBlock Text="ПРОВЕРКИ WINDOWS" Style="{StaticResource Label}" Margin="0,44,0,6"/>
+            <Rectangle Style="{StaticResource Hairline}"/>
+            <ItemsControl x:Name="ChecksList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="44"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Status}" FontFamily="{StaticResource MonoFont}" FontSize="11" FontWeight="Bold"
+                                           Foreground="{Binding StatusBrush}" VerticalAlignment="Top" Margin="0,3,0,0"/>
+                                <StackPanel Grid.Column="1" Margin="0,0,24,0">
+                                    <TextBlock Text="{Binding Title}" FontSize="14.5" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Detail}" Style="{StaticResource Muted}" Margin="0,4,0,0" MaxWidth="640" HorizontalAlignment="Left"/>
+                                </StackPanel>
+                                <Button Grid.Column="2" Content="{Binding FixLabel}" Visibility="{Binding FixVisibility}"
+                                        Style="{StaticResource PrimaryButton}" Padding="16,8" Click="Fix_Click" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Hardware spec sheet -->
+            <TextBlock Text="ЖЕЛЕЗО" Style="{StaticResource Label}" Margin="0,44,0,6"/>
+            <Rectangle Style="{StaticResource Hairline}"/>
+            <ItemsControl x:Name="HwList">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="2"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,16,24,16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Label}" Style="{StaticResource Label}" VerticalAlignment="Top" Margin="0,3,0,0"/>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding Value}" FontFamily="{StaticResource DisplayFont}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding Detail}" Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
