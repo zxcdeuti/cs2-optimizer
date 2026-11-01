@@ -57,9 +57,9 @@ public partial class GraphicsView : UserControl
     void Apply_Click(object sender, RoutedEventArgs e)
     {
         if (_config == null || _preset == null) return;
-        if (Cs2Paths.IsGameRunning && MessageBox.Show(Window.GetWindow(this)!,
-                "CS2 запущена и при выходе перезапишет настройки. Всё равно применить?",
-                "CS2 Optimizer", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+        if (Cs2Paths.IsGameRunning && AppDialog.Ask(Window.GetWindow(this), "CS2 запущена",
+                "При выходе игра перезапишет настройки, и пресет может не сохраниться. Лучше сначала закрыть её.",
+                "Всё равно применить", danger: true) != DialogChoice.Primary)
             return;
 
         try
@@ -78,8 +78,8 @@ public partial class GraphicsView : UserControl
     void Rollback_Click(object sender, RoutedEventArgs e)
     {
         if (_config == null || VideoConfig.LatestBackup(_config.FilePath) is not { } backup) return;
-        if (MessageBox.Show(Window.GetWindow(this)!, $"Вернуть настройки из копии {System.IO.Path.GetFileName(backup)}?",
-                "CS2 Optimizer", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+        if (AppDialog.Ask(Window.GetWindow(this), "Вернуть настройки графики?", $"Настройки будут восстановлены из копии {System.IO.Path.GetFileName(backup)}.",
+                "Вернуть") != DialogChoice.Primary)
             return;
         File.Copy(backup, _config.FilePath, overwrite: true);
         File.Delete(backup);

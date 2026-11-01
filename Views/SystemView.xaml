@@ -58,6 +58,27 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
+            <!-- Undo journal -->
+            <TextBlock Text="ЧТО ИЗМЕНИЛО ПРИЛОЖЕНИЕ" Style="{StaticResource Label}" Margin="0,44,0,6"/>
+            <Rectangle Style="{StaticResource Hairline}"/>
+            <TextBlock x:Name="ChangesEmpty" Style="{StaticResource Muted}" Margin="0,14,0,0"
+                       Text="Пока ничего. Всё, что ты исправишь кнопками выше или в разделе «Сенса и мышь», появится здесь, и его можно будет вернуть."/>
+            <ItemsControl x:Name="ChangesList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,12">
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Вернуть как было" Click="Undo_Click" VerticalAlignment="Center"/>
+                                <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding When, StringFormat={}{0:dd.MM.yyyy HH:mm}}" Style="{StaticResource Label}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
             <!-- Hardware spec sheet -->
             <TextBlock Text="ЖЕЛЕЗО" Style="{StaticResource Label}" Margin="0,44,0,6"/>
             <Rectangle Style="{StaticResource Hairline}"/>

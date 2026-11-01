@@ -145,8 +145,7 @@ public static class SystemInfo
                 FixLabel = "Закрепить",
                 Fix = () =>
                 {
-                    using var key = Registry.CurrentUser.CreateSubKey(GpuPrefKey);
-                    key.SetValue(exe, "GpuPreference=2;");
+                    WindowsChanges.SetRegistry("gpu-pref", "CS2 закреплена за дискретной видеокартой", GpuPrefKey, exe, "GpuPreference=2;");
                     return "CS2 теперь всегда запускается на дискретной видеокарте.";
                 },
             });
@@ -170,8 +169,7 @@ public static class SystemInfo
             FixLabel = "Включить",
             Fix = () =>
             {
-                using var key = Registry.CurrentUser.CreateSubKey(GameBarKey);
-                key.SetValue("AutoGameModeEnabled", 1, RegistryValueKind.DWord);
+                WindowsChanges.SetRegistry("game-mode", "Игровой режим включён", GameBarKey, "AutoGameModeEnabled", 1);
                 return "Игровой режим включён.";
             },
         });
@@ -186,8 +184,7 @@ public static class SystemInfo
             FixLabel = "Выключить",
             Fix = () =>
             {
-                using var key = Registry.CurrentUser.CreateSubKey(GameDvrKey);
-                key.SetValue("HistoricalCaptureEnabled", 0, RegistryValueKind.DWord);
+                WindowsChanges.SetRegistry("xbox-dvr", "Фоновая запись Xbox выключена", GameDvrKey, "HistoricalCaptureEnabled", 0);
                 return "Фоновая запись выключена.";
             },
         });
@@ -220,8 +217,7 @@ public static class SystemInfo
             {
                 var parts = dxSettings.Split(';', StringSplitOptions.RemoveEmptyEntries)
                     .Where(p => !p.StartsWith("SwapEffectUpgradeEnable=")).Append("SwapEffectUpgradeEnable=1");
-                using var key = Registry.CurrentUser.CreateSubKey(GpuPrefKey);
-                key.SetValue(DxGlobalValue, string.Join(";", parts) + ";");
+                WindowsChanges.SetRegistry("windowed-opt", "Оптимизация для оконных игр включена", GpuPrefKey, DxGlobalValue, string.Join(";", parts) + ";");
                 return "Оптимизация для оконных игр включена. Перезапусти CS2, если она открыта.";
             },
         });
@@ -253,8 +249,12 @@ public static class SystemInfo
     [DllImport("kernel32.dll")]
     static extern IntPtr LocalFree(IntPtr mem);
 
+    public static bool SetPowerPlan(string guid) => Powercfg($"/setactive {guid}").Code == 0;
+
     static string SetHighPerformance()
     {
+        var (oldGuid, oldName) = ActivePowerPlan();
+        if (oldGuid.Length > 0) WindowsChanges.RecordPowerPlan(oldGuid, oldName);
         if (Powercfg($"/setactive {HighPerfGuid}").Code == 0)
             return "Включена «Высокая производительность».";
 

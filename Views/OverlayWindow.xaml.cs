@@ -9,7 +9,7 @@ namespace CS2Optimizer.Views;
 /// <summary>Click-through, always-on-top watermark that lives in its own process.</summary>
 public partial class OverlayWindow : Window
 {
-    const string MutexName = @"Local\CS2Optimizer.Overlay";
+    static readonly string MutexName = TestScope.Name(@"Local\CS2Optimizer.Overlay");
 
     static Mutex? _instance;
 
@@ -18,6 +18,7 @@ public partial class OverlayWindow : Window
     OverlaySettings _settings = OverlaySettings.Load();
     DateTime _settingsStamp;
     RegisteredWaitHandle? _hotkeyWait;
+    readonly SessionRecorder _recorder;
 
     public OverlayWindow()
     {
@@ -26,7 +27,13 @@ public partial class OverlayWindow : Window
         SizeChanged += (_, _) => Place();
         _timer.Tick += (_, _) => Tick();
         _timer.Start();
-        Closed += (_, _) => { _telemetry.Dispose(); _hotkeyWait?.Unregister(null); };
+        _recorder = new SessionRecorder(_telemetry.Fps);
+        Closed += (_, _) =>
+        {
+            _recorder.Finish();
+            _telemetry.Dispose();
+            _hotkeyWait?.Unregister(null);
+        };
         Loaded += (_, _) => Tick();
     }
 
@@ -68,7 +75,9 @@ public partial class OverlayWindow : Window
         }
         ListenForHotkey();
 
-        Bar.Show(_telemetry.Sample(), _settings);
+        var stats = _telemetry.Sample();
+        Bar.Show(stats, _settings);
+        _recorder.Tick(stats);
 
         // Games sometimes push themselves above other topmost windows; take the spot back.
         var hwnd = new WindowInteropHelper(this).Handle;

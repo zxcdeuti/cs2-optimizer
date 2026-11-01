@@ -21,7 +21,7 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="48,6,48,48">
-            <TextBlock Text="10 / НАСТРОЙКИ" Style="{StaticResource Eyebrow}"/>
+            <TextBlock Text="11 / НАСТРОЙКИ" Style="{StaticResource Eyebrow}"/>
             <TextBlock Text="Настройки" Style="{StaticResource H1}"/>
             <TextBlock Text="Как приложение запускается, сворачивается и что делает само." Style="{StaticResource Lead}"/>
             <Rectangle Style="{StaticResource PageRule}"/>
@@ -88,8 +88,61 @@
                 </DockPanel>
             </Border>
 
+            <!-- Before a match -->
+            <TextBlock Text="C — КНОПКА «ИГРАТЬ»" Style="{StaticResource Label}" Margin="0,36,0,6"/>
+            <Rectangle Style="{StaticResource Hairline}"/>
+            <Border Style="{StaticResource Row}">
+                <DockPanel>
+                    <CheckBox x:Name="PrepCloseApps" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                    <StackPanel Margin="0,0,24,0">
+                        <TextBlock Text="Закрывать лишние программы" Style="{StaticResource RowTitle}"/>
+                        <TextBlock Text="Какие именно — настраивается правилами в разделе «Очистка фона»." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+            <Border Style="{StaticResource Row}">
+                <DockPanel>
+                    <CheckBox x:Name="PrepConfirm" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                    <StackPanel Margin="0,0,24,0">
+                        <TextBlock Text="Спрашивать перед закрытием" Style="{StaticResource RowTitle}"/>
+                        <TextBlock Text="Показывать список программ. Без вопроса они закроются сразу, несохранённое может пропасть." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+            <Border Style="{StaticResource Row}">
+                <DockPanel>
+                    <CheckBox x:Name="PrepOverlay" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                    <StackPanel Margin="0,0,24,0">
+                        <TextBlock Text="Включать ватермарку" Style="{StaticResource RowTitle}"/>
+                        <TextBlock Text="Заодно это включает запись замера FPS за игру." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- Updates -->
+            <TextBlock Text="D — ОБНОВЛЕНИЯ" Style="{StaticResource Label}" Margin="0,36,0,6"/>
+            <Rectangle Style="{StaticResource Hairline}"/>
+            <Border Style="{StaticResource Row}">
+                <DockPanel>
+                    <CheckBox x:Name="AutoUpdate" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                    <StackPanel Margin="0,0,24,0">
+                        <TextBlock Text="Обновлять автоматически" Style="{StaticResource RowTitle}"/>
+                        <TextBlock Text="Раз в час проверяет релизы проекта на GitHub и скачивает новую версию в фоне. Ставит её, только когда закрыты CS2 и ватермарка, а окно свёрнуто, или при выходе." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+            <Border Style="{StaticResource Row}">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Проверить сейчас" Click="CheckUpdates_Click" VerticalAlignment="Center"/>
+                    <StackPanel Margin="0,0,24,0">
+                        <TextBlock x:Name="UpdateVersion" Style="{StaticResource RowTitle}"/>
+                        <TextBlock x:Name="UpdateStatus" Style="{StaticResource Muted}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
             <!-- Maps -->
-            <TextBlock Text="C — КАРТЫ" Style="{StaticResource Label}" Margin="0,36,0,6"/>
+            <TextBlock Text="E — КАРТЫ" Style="{StaticResource Label}" Margin="0,36,0,6"/>
             <Rectangle Style="{StaticResource Hairline}"/>
             <Border Style="{StaticResource Row}">
                 <DockPanel>
@@ -114,7 +167,7 @@
             </Border>
 
             <!-- Data -->
-            <TextBlock Text="D — ДАННЫЕ" Style="{StaticResource Label}" Margin="0,36,0,6"/>
+            <TextBlock Text="F — ДАННЫЕ" Style="{StaticResource Label}" Margin="0,36,0,6"/>
             <Rectangle Style="{StaticResource Hairline}"/>
             <Border Style="{StaticResource Row}">
                 <DockPanel>

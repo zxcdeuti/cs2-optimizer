@@ -26,8 +26,9 @@ public sealed class FpsMonitor : IDisposable
         _session.EnableProvider(DxgiProvider);
         _session.Source.AllEvents += e =>
         {
-            if ((int)e.ID == PresentStart && e.ProviderGuid == DxgiProvider)
-                _presents.AddOrUpdate(e.ProcessID, 1, (_, n) => n + 1);
+            if ((int)e.ID != PresentStart || e.ProviderGuid != DxgiProvider) return;
+            _presents.AddOrUpdate(e.ProcessID, 1, (_, n) => n + 1);
+            if (e.ProcessID == _trackedPid) CountFrame(e.TimeStampRelativeMSec);
         };
         new Thread(() => _session.Source.Process()) { IsBackground = true, Name = "ETW FPS" }.Start();
     }
@@ -50,8 +51,39 @@ public sealed class FpsMonitor : IDisposable
         _presents.Clear();
 
         GetWindowThreadProcessId(GetForegroundWindow(), out uint foreground);
+        _trackedInFront = foreground == (uint)_trackedPid;
         int frames = counts.FirstOrDefault(c => c.Key == foreground).Value;
         return frames > 0 && seconds > 0 ? (int)Math.Round(frames / seconds) : null;
+    }
+
+    // ── frame-time histogram for session stats ─────────────────────────────────
+
+    volatile int _trackedPid;
+    volatile bool _trackedInFront;
+    double _lastFrameMs;
+    readonly FrameTimes _frames = new();
+
+    /// <summary>Starts counting this process's frames while it is in the foreground (alt-tabbed time is skipped).</summary>
+    public void Track(int pid)
+    {
+        lock (_frames) { _frames.Clear(); _lastFrameMs = 0; }
+        _trackedPid = pid;
+    }
+
+    public FrameTimes StopTracking()
+    {
+        _trackedPid = 0;
+        lock (_frames) return _frames.Copy();
+    }
+
+    void CountFrame(double nowMs)
+    {
+        lock (_frames)
+        {
+            if (!_trackedInFront) { _lastFrameMs = 0; return; }
+            if (_lastFrameMs > 0) _frames.Add(nowMs - _lastFrameMs);
+            _lastFrameMs = nowMs;
+        }
     }
 
     public void Dispose() => _session.Dispose();

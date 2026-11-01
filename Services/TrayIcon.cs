@@ -12,6 +12,7 @@ public sealed class TrayIcon : IDisposable
 
     public event Action? OpenRequested;
     public event Action? OverlayToggleRequested;
+    public event Action? PrepareRequested;
     public event Action? ExitRequested;
 
     public TrayIcon()
@@ -19,6 +20,7 @@ public sealed class TrayIcon : IDisposable
         using var stream = Application.GetResourceStream(new Uri("pack://application:,,,/Assets/app.ico"))!.Stream;
         var menu = new Forms.ContextMenuStrip { Renderer = new DarkRenderer(), ShowImageMargin = false, Font = new Drawing.Font("Segoe UI", 9.5f) };
         menu.Items.Add(new Forms.ToolStripMenuItem("Открыть CS2 Optimizer", null, (_, _) => OpenRequested?.Invoke()) { Font = new Drawing.Font("Segoe UI", 9.5f, Drawing.FontStyle.Bold) });
+        menu.Items.Add(new Forms.ToolStripMenuItem("Играть: подготовить и запустить CS2", null, (_, _) => PrepareRequested?.Invoke()));
         _overlayItem = new Forms.ToolStripMenuItem("Ватермарка", null, (_, _) => OverlayToggleRequested?.Invoke());
         menu.Items.Add(_overlayItem);
         menu.Items.Add(new Forms.ToolStripSeparator());

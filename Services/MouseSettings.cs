@@ -18,8 +18,23 @@ public static class MouseSettings
         }
     }
 
-    public static bool DisableAcceleration() =>
-        SystemParametersInfo(SpiSetMouse, 0, new int[3], UpdateIniFile | SendChange);
+    /// <summary>The three SPI_GETMOUSE values (threshold 1, threshold 2, acceleration).</summary>
+    public static int[] Thresholds
+    {
+        get
+        {
+            var values = new int[3];
+            SystemParametersInfo(SpiGetMouse, 0, values, 0);
+            return values;
+        }
+        set => SystemParametersInfo(SpiSetMouse, 0, value, UpdateIniFile | SendChange);
+    }
+
+    public static bool DisableAcceleration()
+    {
+        WindowsChanges.RecordMouse(Thresholds);
+        return SystemParametersInfo(SpiSetMouse, 0, new int[3], UpdateIniFile | SendChange);
+    }
 
     /// <summary>Pointer speed 1–20; 10 is the 1:1 default.</summary>
     public static int PointerSpeed

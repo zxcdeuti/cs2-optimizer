@@ -54,7 +54,7 @@ public readonly record struct KeyCombo(ModifierKeys Modifiers, Key Key)
 /// </summary>
 public sealed class WatermarkHotkey : IDisposable
 {
-    public const string ToggleEventName = @"Local\CS2Optimizer.OverlayToggle";
+    public static readonly string ToggleEventName = TestScope.Name(@"Local\CS2Optimizer.OverlayToggle");
 
     const int Id = 0xC520, WmHotkey = 0x0312;
     const uint ModNoRepeat = 0x4000;

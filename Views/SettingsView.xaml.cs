@@ -24,8 +24,29 @@ public partial class SettingsView : UserControl
         Autostart.IsChecked = Services.Autostart.Enabled;
         DataPathText.Text = AppSettings.DataDir;
         VersionText.Text = $"CS2/OPT {typeof(App).Assembly.GetName().Version?.ToString(2)}";
+        (PrepCloseApps.IsChecked, PrepConfirm.IsChecked, PrepOverlay.IsChecked) = (s.PrepCloseApps, s.PrepConfirm, s.PrepOverlay);
+        AutoUpdate.IsChecked = s.AutoUpdate;
+        Updater.Instance.Changed -= ShowUpdateStatus;
+        Updater.Instance.Changed += ShowUpdateStatus;
+        ShowUpdateStatus();
         ShowCacheSize();
         _ready = true;
+    }
+
+    void ShowUpdateStatus()
+    {
+        UpdateVersion.Text = $"Установлена версия {Updater.CurrentVersion}";
+        UpdateStatus.Text = Updater.Instance.Status;
+    }
+
+    async void CheckUpdates_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AppSettings.Current.AutoUpdate)
+        {
+            ResultText.Text = "Сначала включи автоматическое обновление.";
+            return;
+        }
+        await Updater.Instance.Check();
     }
 
     void ShowCacheSize()
@@ -49,6 +70,10 @@ public partial class SettingsView : UserControl
             OverlayOnStart = OverlayOnStart.IsChecked == true,
             OverlayAsAdmin = OverlayAsAdmin.IsChecked == true,
             MapLabelsRu = LabelsRu.IsChecked == true,
+            PrepCloseApps = PrepCloseApps.IsChecked == true,
+            PrepConfirm = PrepConfirm.IsChecked == true,
+            PrepOverlay = PrepOverlay.IsChecked == true,
+            AutoUpdate = AutoUpdate.IsChecked == true,
         });
         ResultText.Text = "Сохранено.";
     }
@@ -81,9 +106,9 @@ public partial class SettingsView : UserControl
 
     void Reset_Click(object sender, RoutedEventArgs e)
     {
-        if (MessageBox.Show(Window.GetWindow(this)!,
-                "Сбросить прицел, конфиг, ватермарку и настройки приложения?\nФайлы CS2 (autoexec.cfg, cs2_video.txt) не изменятся.",
-                "CS2 Optimizer", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+        if (AppDialog.Ask(Window.GetWindow(this), "Сбросить всё?",
+                "Прицел, конфиг, ватермарка и настройки приложения вернутся к значениям по умолчанию. Файлы CS2 (autoexec.cfg, cs2_video.txt) не изменятся.",
+                "Сбросить", danger: true) != DialogChoice.Primary)
             return;
 
         if (OverlayControl.IsRunning) OverlayControl.Stop();

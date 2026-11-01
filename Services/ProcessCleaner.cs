@@ -24,6 +24,27 @@ public class ProcGroup : INotifyPropertyChanged
     /// <summary>Length of the memory bar in the list, relative to the heaviest program.</summary>
     public double BarWidth { get; set; }
 
+    string? _rule;
+
+    /// <summary>The user's standing choice: "close", "keep" or null for the default behaviour.</summary>
+    public string? Rule
+    {
+        get => _rule;
+        set
+        {
+            _rule = value;
+            PropertyChanged?.Invoke(this, new(nameof(Rule)));
+            PropertyChanged?.Invoke(this, new(nameof(RuleLabel)));
+            PropertyChanged?.Invoke(this, new(nameof(RuleBrush)));
+        }
+    }
+
+    public string RuleLabel => Rule switch { "close" => "ВСЕГДА ЗАКРЫВАТЬ", "keep" => "НЕ ТРОГАТЬ", _ => "АВТО" };
+
+    /// <summary>Accent only for a rule the user actually set.</summary>
+    public System.Windows.Media.Brush RuleBrush =>
+        (System.Windows.Media.Brush)Application.Current.Resources[Rule switch { "close" => "AccentBrush", "keep" => "WarnBrush", _ => "DimBrush" }];
+
     public string Memory => ProcessCleaner.FormatBytes(Bytes);
     public string Sub => Count == 1 ? "1 процесс" : $"{Count} процессов";
     public string Initial => Display[..1].ToUpperInvariant();
@@ -80,20 +101,51 @@ public static class ProcessCleaner
             }
         }
 
+        var rules = LoadRules();
         return groups
-            .Where(g => g.Value.Bytes >= MinBytes || Known.ContainsKey(g.Key))
-            .Select(g => new ProcGroup
+            .Where(g => g.Value.Bytes >= MinBytes || Known.ContainsKey(g.Key) || rules.ContainsKey(g.Key))
+            .Select(g =>
             {
-                Name = g.Key,
-                Display = Known.TryGetValue(g.Key, out var d) ? d : g.Key,
-                Count = g.Value.Count,
-                Bytes = g.Value.Bytes,
-                Recommended = Known.ContainsKey(g.Key),
-                IsSelected = Known.ContainsKey(g.Key),
+                var rule = rules.GetValueOrDefault(g.Key);
+                return new ProcGroup
+                {
+                    Name = g.Key,
+                    Display = Known.TryGetValue(g.Key, out var d) ? d : g.Key,
+                    Count = g.Value.Count,
+                    Bytes = g.Value.Bytes,
+                    Recommended = Known.ContainsKey(g.Key),
+                    Rule = rule,
+                    IsSelected = rule == "close" || (rule == null && Known.ContainsKey(g.Key)),
+                };
             })
-            .OrderByDescending(g => g.Recommended)
+            .OrderByDescending(g => g.IsSelected)
             .ThenByDescending(g => g.Bytes)
             .ToList();
+    }
+
+    static readonly string RulesPath = Path.Combine(AppSettings.DataDir, "process-rules.json");
+
+    static Dictionary<string, string> LoadRules()
+    {
+        try
+        {
+            return new Dictionary<string, string>(
+                System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(RulesPath)) ?? [],
+                StringComparer.OrdinalIgnoreCase);
+        }
+        catch (Exception e) when (e is IOException or System.Text.Json.JsonException or UnauthorizedAccessException)
+        {
+            return new(StringComparer.OrdinalIgnoreCase);
+        }
+    }
+
+    public static void SaveRule(string process, string? rule)
+    {
+        var rules = LoadRules();
+        if (rule == null) rules.Remove(process);
+        else rules[process] = rule;
+        Directory.CreateDirectory(AppSettings.DataDir);
+        File.WriteAllText(RulesPath, System.Text.Json.JsonSerializer.Serialize(rules));
     }
 
     /// <summary>Asks each window to close politely, then ends whatever is still running.</summary>

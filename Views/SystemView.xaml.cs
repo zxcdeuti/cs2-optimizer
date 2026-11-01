@@ -10,8 +10,27 @@ public partial class SystemView : UserControl
 
     public SystemView() => InitializeComponent();
 
+    void ShowChanges()
+    {
+        var changes = WindowsChanges.All();
+        ChangesList.ItemsSource = changes;
+        ChangesEmpty.Visibility = changes.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    async void Undo_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { DataContext: WindowsChange change } button) return;
+        button.IsEnabled = false;
+        string message;
+        try { message = await Task.Run(() => WindowsChanges.Undo(change)); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException) { message = "Не получилось: " + ex.Message; }
+        await RunChecks();
+        ScoreSub.Text = message;
+    }
+
     async void OnLoaded(object sender, RoutedEventArgs e)
     {
+        ShowChanges(); // may have changed on another page (mouse acceleration)
         if (_scanned) return;
         _scanned = true;
         await RunChecks();
@@ -24,6 +43,7 @@ public partial class SystemView : UserControl
         ScoreTitle.Text = "Сканирую…";
         var checks = await Task.Run(SystemInfo.Checks);
         ChecksList.ItemsSource = checks;
+        ShowChanges();
 
         int ok = checks.Count(c => c.Ok);
         ScoreOk.Text = ok.ToString();

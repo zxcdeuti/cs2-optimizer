@@ -13,7 +13,7 @@
         <StackPanel>
             <TextBlock Text="04 / ОЧИСТКА ФОНА" Style="{StaticResource Eyebrow}"/>
             <TextBlock Text="Фоновые программы" Style="{StaticResource H1}"/>
-            <TextBlock Text="Что сейчас занимает память. Отмеченные программы будут закрыты — сохрани в них всё нужное."
+            <TextBlock Text="Что сейчас занимает память. Отмеченные программы будут закрыты — сохрани в них всё нужное. Правило запоминает твой выбор для следующих очисток и кнопки «Играть»."
                        Style="{StaticResource Lead}"/>
             <Rectangle Style="{StaticResource PageRule}" Margin="0,28,0,24"/>
         </StackPanel>
@@ -47,15 +47,17 @@
         </Grid>
 
         <DockPanel Grid.Row="2">
-            <Grid DockPanel.Dock="Top" Margin="38,0,0,8">
+            <Grid DockPanel.Dock="Top" Margin="38,0,14,8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="80"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="ПРОГРАММА" Style="{StaticResource Label}"/>
-                <TextBlock Grid.Column="1" Text="ДОЛЯ" Style="{StaticResource Label}"/>
-                <TextBlock Grid.Column="2" Text="ПАМЯТЬ" Style="{StaticResource Label}" HorizontalAlignment="Right"/>
+                <TextBlock Grid.Column="1" Text="ПРАВИЛО" Style="{StaticResource Label}"/>
+                <TextBlock Grid.Column="2" Text="ДОЛЯ" Style="{StaticResource Label}"/>
+                <TextBlock Grid.Column="3" Text="ПАМЯТЬ" Style="{StaticResource Label}" HorizontalAlignment="Right"/>
             </Grid>
             <Rectangle DockPanel.Dock="Top" Style="{StaticResource Hairline}"/>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -65,21 +67,19 @@
                             <CheckBox Style="{StaticResource RowCheck}" IsChecked="{Binding IsSelected}" Click="Selection_Click">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="200"/>
-                                        <ColumnDefinition Width="90"/>
-                                    </Grid.ColumnDefinitions>
+                                        <ColumnDefinition/><ColumnDefinition Width="150"/><ColumnDefinition Width="130"/><ColumnDefinition Width="80"/></Grid.ColumnDefinitions>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Display}" FontSize="14" FontWeight="SemiBold"/>
                                         <TextBlock Text="{Binding Sub}" Style="{StaticResource Label}" Margin="12,1,0,0"/>
                                         <TextBlock Text="РЕКОМЕНДУЕМ ЗАКРЫТЬ" Style="{StaticResource Label}" Foreground="{StaticResource WarnBrush}"
                                                    Visibility="{Binding TagVisibility}" Margin="14,1,0,0"/>
                                     </StackPanel>
-                                    <Grid Grid.Column="1" Height="4" VerticalAlignment="Center" Margin="0,0,24,0">
+                                    <Button Grid.Column="1" Style="{StaticResource LinkButton}" Content="{Binding RuleLabel}" Foreground="{Binding RuleBrush}" Click="Rule_Click" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="Что делать с этой программой при очистке и подготовке к игре. Нажми, чтобы сменить."/>
+                                    <Grid Grid.Column="2" Height="4" VerticalAlignment="Center" Margin="0,0,20,0">
                                         <Rectangle Fill="{StaticResource LineBrush}"/>
                                         <Rectangle Fill="{StaticResource MutedBrush}" HorizontalAlignment="Left" Width="{Binding BarWidth}"/>
                                     </Grid>
-                                    <TextBlock Grid.Column="2" Text="{Binding Memory}" Style="{StaticResource Num}" FontSize="15"
+                                    <TextBlock Grid.Column="3" Text="{Binding Memory}" Style="{StaticResource Num}" FontSize="15"
                                                HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                 </Grid>
                             </CheckBox>

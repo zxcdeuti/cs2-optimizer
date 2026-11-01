@@ -13,7 +13,11 @@ public record AppSettings(
     bool MapLabelsRu = true,
     bool TrayHintShown = false,
     bool HotkeyEnabled = true,
-    string Hotkey = "Alt+W")
+    string Hotkey = "Alt+W",
+    bool PrepCloseApps = true,
+    bool PrepOverlay = true,
+    bool PrepConfirm = true,
+    bool AutoUpdate = true)
 {
     /// <summary>Raised after Save/Reset so live features (the watermark hotkey) can pick up changes.</summary>
     public static event Action? Changed;

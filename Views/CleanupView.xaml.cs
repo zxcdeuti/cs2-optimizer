@@ -16,7 +16,7 @@ public partial class CleanupView : UserControl
     {
         _groups = await Task.Run(ProcessCleaner.Scan);
         long max = _groups.Select(g => g.Bytes).DefaultIfEmpty(1).Max();
-        foreach (var g in _groups) g.BarWidth = 176.0 * g.Bytes / max;
+        foreach (var g in _groups) g.BarWidth = 110.0 * g.Bytes / max;
         ProcList.ItemsSource = _groups;
         var (used, total) = ProcessCleaner.MemoryUsage();
         UsedMem.Text = ProcessCleaner.FormatBytes(used);
@@ -34,6 +34,16 @@ public partial class CleanupView : UserControl
 
     void Selection_Click(object sender, RoutedEventArgs e) => UpdateSummary();
 
+    /// <summary>Cycles default → always close → never touch, remembers it and applies it to the current selection.</summary>
+    void Rule_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { DataContext: ProcGroup group }) return;
+        group.Rule = group.Rule switch { null => "close", "close" => "keep", _ => null };
+        ProcessCleaner.SaveRule(group.Name, group.Rule);
+        group.IsSelected = group.Rule == "close" || (group.Rule == null && group.Recommended);
+        UpdateSummary();
+    }
+
     async void Refresh_Click(object sender, RoutedEventArgs e)
     {
         ResultText.Text = "";
@@ -44,10 +54,8 @@ public partial class CleanupView : UserControl
     {
         var selected = _groups.Where(g => g.IsSelected).ToList();
         if (selected.Count == 0) return;
-        var names = string.Join(", ", selected.Select(g => g.Display));
-        if (MessageBox.Show(Window.GetWindow(this)!,
-                $"Закрыть: {names}?\n\nНесохранённые данные в этих программах могут пропасть.",
-                "CS2 Optimizer", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+        if (AppDialog.Ask(Window.GetWindow(this), "Закрыть программы?", "Несохранённые данные в них могут пропасть.", "Закрыть",
+                danger: true, items: selected.Select(g => g.Display).ToList()) != DialogChoice.Primary)
             return;
 
         CloseBtn.IsEnabled = false;

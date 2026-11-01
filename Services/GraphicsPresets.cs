@@ -26,6 +26,22 @@ public static class GraphicsPresets
         new("setting.videocfg_fsr_detail", "FidelityFX Super Resolution", v => v is null or "0" ? "Выкл" : "Вкл"),
     ];
 
+    /// <summary>Which preset the game's settings match right now; window mode is ignored since people change it for the watermark.</summary>
+    public static string DetectCurrent()
+    {
+        try
+        {
+            if (Cs2Paths.VideoConfig is not { } path) return "—";
+            var config = new VideoConfig(path);
+            string[] ignored = ["setting.fullscreen", "setting.nowindowborder"];
+            return All.FirstOrDefault(p => p.Values.All(v => ignored.Contains(v.Key) || config.Get(v.Key) == v.Value))?.Title ?? "Свои настройки";
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            return "—";
+        }
+    }
+
     // Dynamic shadows stay on "All" everywhere: they show enemy shadows round corners.
     public static readonly Preset[] All =
     [

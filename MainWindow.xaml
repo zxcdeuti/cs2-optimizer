@@ -26,13 +26,26 @@
                                VerticalAlignment="Center" Margin="12,0,0,0"/>
                     <TextBlock Text="/OPT" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="17"
                                Foreground="{StaticResource DimBrush}" VerticalAlignment="Center"/>
-                    <TextBlock Text="v2.2" Style="{StaticResource Label}" Margin="10,3,0,0"/>
+                    <TextBlock x:Name="VersionLabel" Style="{StaticResource Label}" Margin="10,3,0,0"/>
                 </StackPanel>
 
                 <Rectangle DockPanel.Dock="Top" Style="{StaticResource Hairline}" Margin="0,22,0,14"/>
 
-                <!-- footer: live hardware line -->
+                <!-- one click before a match -->
+                <StackPanel DockPanel.Dock="Top" Margin="16,0,16,14">
+                    <Button x:Name="PlayBtn" Style="{StaticResource PrimaryButton}" Click="Play_Click" HorizontalAlignment="Stretch"
+                            ToolTip="Закрыть лишние программы, включить ватермарку и запустить CS2">
+                        <TextBlock Text="ИГРАТЬ" FontWeight="Bold"/>
+                    </Button>
+                    <TextBlock x:Name="PlayStatus" Style="{StaticResource Muted}" FontSize="11.5" LineHeight="16" Margin="0,6,0,0" Visibility="Collapsed"/>
+                </StackPanel>
+
+                <!-- footer: update notice and live hardware line -->
                 <StackPanel DockPanel.Dock="Bottom" Margin="20,0,20,20">
+                    <StackPanel x:Name="UpdateNotice" Visibility="Collapsed" Margin="0,0,0,14">
+                        <TextBlock x:Name="UpdateText" Style="{StaticResource Label}" Foreground="{StaticResource AccentBrush}" TextWrapping="Wrap"/>
+                        <Button Style="{StaticResource LinkButton}" Content="→ УСТАНОВИТЬ СЕЙЧАС" Click="InstallUpdate_Click" Margin="0,4,0,0" HorizontalAlignment="Left"/>
+                    </StackPanel>
                     <Rectangle Style="{StaticResource Hairline}" Margin="-20,0,-20,16"/>
                     <TextBlock Text="УСТРОЙСТВО" Style="{StaticResource Label}"/>
                     <TextBlock x:Name="FooterGpu" Text="…" Style="{StaticResource Label}" Foreground="{StaticResource MutedBrush}"
@@ -74,10 +87,13 @@
                     <RadioButton x:Name="Nav_watermark" Style="{StaticResource NavButton}" GroupName="nav" Tag="watermark" Checked="Nav_Checked">
                         <StackPanel Orientation="Horizontal"><TextBlock Text="09" Style="{StaticResource NavNum}"/><TextBlock Text="Ватермарка"/></StackPanel>
                     </RadioButton>
+                    <RadioButton x:Name="Nav_sessions" Style="{StaticResource NavButton}" GroupName="nav" Tag="sessions" Checked="Nav_Checked">
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="10" Style="{StaticResource NavNum}"/><TextBlock Text="Замеры FPS"/></StackPanel>
+                    </RadioButton>
 
                     <TextBlock Text="ПРИЛОЖЕНИЕ" Style="{StaticResource Label}" Margin="20,22,0,8"/>
                     <RadioButton x:Name="Nav_settings" Style="{StaticResource NavButton}" GroupName="nav" Tag="settings" Checked="Nav_Checked">
-                        <StackPanel Orientation="Horizontal"><TextBlock Text="10" Style="{StaticResource NavNum}"/><TextBlock Text="Настройки"/></StackPanel>
+                        <StackPanel Orientation="Horizontal"><TextBlock Text="11" Style="{StaticResource NavNum}"/><TextBlock Text="Настройки"/></StackPanel>
                     </RadioButton>
                 </StackPanel>
                 </ScrollViewer>
