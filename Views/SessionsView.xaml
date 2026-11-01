@@ -1,7 +1,7 @@
 <UserControl x:Class="CS2Optimizer.Views.SessionsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Loaded="OnLoaded">
+             Loaded="OnLoaded" Unloaded="OnUnloaded">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="48,6,48,48">
             <TextBlock Text="10 / ЗАМЕРЫ FPS" Style="{StaticResource Eyebrow}"/>
@@ -10,8 +10,19 @@
                        Style="{StaticResource Lead}"/>
             <Rectangle Style="{StaticResource PageRule}"/>
 
+            <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,16" Margin="0,0,0,24">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Открыть журнал" Click="OpenLog_Click" VerticalAlignment="Center"/>
+                    <Rectangle x:Name="StateDot" Width="8" Height="8" Fill="{StaticResource DimBrush}" VerticalAlignment="Center"/>
+                    <StackPanel Margin="14,0,16,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="StateTitle" Style="{StaticResource Label}" Foreground="{StaticResource TextBrush}" FontSize="12"/>
+                        <TextBlock x:Name="StateDetail" Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
             <TextBlock x:Name="EmptyText" Style="{StaticResource Muted}" FontSize="14" LineHeight="21" MaxWidth="640" HorizontalAlignment="Left"
-                       Text="Пока замеров нет. Включи ватермарку с правами администратора (или нажми «Играть») и сыграй хотя бы минуту: когда CS2 закроется, здесь появится результат."/>
+                       Text="Пока замеров нет. Сыграй хотя бы минуту с включённой ватермаркой: результат появится здесь и будет обновляться каждую минуту игры."/>
 
             <StackPanel x:Name="Body" Visibility="Collapsed">
                 <TextBlock x:Name="LastTitle" Style="{StaticResource Label}" Margin="0,0,0,14"/>

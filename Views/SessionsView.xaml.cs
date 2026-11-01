@@ -9,12 +9,51 @@ public record SessionRow(DateTime Start, string Duration, string Avg, string Low
 
 public partial class SessionsView : UserControl
 {
-    public SessionsView() => InitializeComponent();
+    readonly System.Windows.Threading.DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(3) };
 
-    void OnLoaded(object sender, RoutedEventArgs e) => Show();
+    public SessionsView()
+    {
+        InitializeComponent();
+        _timer.Tick += (_, _) => Show();
+    }
+
+    void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        Show();
+        _timer.Start();
+    }
+
+    void OnUnloaded(object sender, RoutedEventArgs e) => _timer.Stop();
+
+    void ShowRecorderState()
+    {
+        var state = RecorderLog.Read();
+        // A crashed or killed watermark leaves its last state behind, so the running check comes first.
+        var (title, detail, dot) = !OverlayControl.IsRunning
+            ? ("ЗАПИСЬ НЕ ИДЁТ", "Ватермарка выключена. Включи её или нажми «Играть», замер запишется сам.", "DimBrush")
+            : state?.State switch
+            {
+                "recording" => ("ИДЁТ ЗАПИСЬ", state.Detail, "AccentBrush"),
+                "no-fps" => ("ЗАПИСЬ НЕ ИДЁТ", state.Detail + " Выключи ватермарку и включи снова, разрешив запрос Windows.", "WarnBrush"),
+                "waiting" => ("ГОТОВО К ЗАПИСИ", "Запись начнётся сама, когда запустится CS2.", "AccentBrush"),
+                _ => ("ЖДЁМ ВАТЕРМАРКУ", "Статус появится через пару секунд.", "DimBrush"),
+            };
+        StateTitle.Text = title;
+        StateDetail.Text = detail;
+        StateDot.Fill = (Brush)FindResource(dot);
+    }
+
+    void OpenLog_Click(object sender, RoutedEventArgs e)
+    {
+        if (File.Exists(RecorderLog.LogPath))
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(RecorderLog.LogPath) { UseShellExecute = true });
+        else
+            AppDialog.Inform(Window.GetWindow(this), "Журнала пока нет", "Он появится, когда ватермарка новой версии запустится хотя бы раз.");
+    }
 
     void Show()
     {
+        ShowRecorderState();
         var all = SessionLog.All();
         EmptyText.Visibility = all.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         Body.Visibility = all.Count == 0 ? Visibility.Collapsed : Visibility.Visible;

@@ -73,12 +73,14 @@ public static class SessionLog
         catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException) { return []; }
     }
 
-    public static void Add(GameSession session)
+    /// <summary>Adds the session, or updates it in place: a running game is saved every minute under the same start time.</summary>
+    public static void Save(GameSession session)
     {
         var all = All();
+        all.RemoveAll(s => s.Start == session.Start);
         all.Insert(0, session);
         Directory.CreateDirectory(AppSettings.DataDir);
-        File.WriteAllText(FilePath, JsonSerializer.Serialize(all.Take(Keep)));
+        File.WriteAllText(FilePath, JsonSerializer.Serialize(all.Take(Keep).ToList()));
     }
 
     public static void Clear()
@@ -87,11 +89,58 @@ public static class SessionLog
     }
 }
 
+/// <param name="State">"off", "no-fps", "waiting" or "recording".</param>
+public record RecorderState(string State, string Detail, DateTime When);
+
+/// <summary>What the recorder is doing, written by the watermark process and shown on the sessions page, plus a plain log.</summary>
+public static class RecorderLog
+{
+    public static readonly string LogPath = Path.Combine(AppSettings.DataDir, "overlay.log");
+    static readonly string StatePath = Path.Combine(AppSettings.DataDir, "recorder-state.json");
+    const long MaxLogBytes = 256 * 1024;
+    static string? _lastState;
+
+    public static void Write(string line)
+    {
+        try
+        {
+            Directory.CreateDirectory(AppSettings.DataDir);
+            if (File.Exists(LogPath) && new FileInfo(LogPath).Length > MaxLogBytes) File.Delete(LogPath);
+            File.AppendAllText(LogPath, $"{DateTime.Now:dd.MM.yyyy HH:mm:ss}  {line}{Environment.NewLine}");
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
+    }
+
+    public static void Status(string state, string detail)
+    {
+        if (state + detail == _lastState) return;
+        _lastState = state + detail;
+        Write($"[{state}] {detail}");
+        try
+        {
+            Directory.CreateDirectory(AppSettings.DataDir);
+            File.WriteAllText(StatePath, JsonSerializer.Serialize(new RecorderState(state, detail, DateTime.Now)));
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
+    }
+
+    public static RecorderState? Read()
+    {
+        try { return JsonSerializer.Deserialize<RecorderState>(File.ReadAllText(StatePath)); }
+        catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException) { return null; }
+    }
+}
+
 /// <summary>Runs inside the watermark process, the one with FPS access: one session per CS2 launch.</summary>
 public sealed class SessionRecorder(FpsMonitor? fps)
 {
     // Shorter runs (a crash, a quick settings check) would only add noise to the comparison.
+#if DEBUG
+    static readonly double MinMinutes = TestScope.Arg("--test-pid") != null ? 0.1 : 1;
+#else
     const double MinMinutes = 1;
+#endif
+    const int CheckpointEverySeconds = 60;
 
     int _pid;
     DateTime _start;
@@ -102,44 +151,99 @@ public sealed class SessionRecorder(FpsMonitor? fps)
 
     public void Tick(Stats s)
     {
-        if (fps == null) return;
-        var cs2 = Process.GetProcessesByName("cs2");
-        int pid = cs2.FirstOrDefault()?.Id ?? 0;
-        foreach (var p in cs2) p.Dispose();
+        if (fps == null)
+        {
+            RecorderLog.Status("no-fps", FpsMonitor.LastError ?? "FPS недоступен.");
+            return;
+        }
 
+        int pid = FindGame();
         if (pid != _pid)
         {
             Finish();
             if (pid != 0) Begin(pid);
         }
-        if (_pid == 0) return;
+        if (_pid == 0)
+        {
+            RecorderLog.Status("waiting", "Ждём запуска CS2.");
+            return;
+        }
 
         _samples++;
         _cpuSum += s.CpuLoad;
         if (s.CpuTemp is { } c) _cpuMax = Math.Max(_cpuMax ?? 0, c);
         if (s.GpuTemp is { } g) _gpuMax = Math.Max(_gpuMax ?? 0, g);
         if (s.GpuLoad is { } l) { _gpuSum += l; _gpuSamples++; }
+
+        // A crash or a power cut then costs at most a minute of the game, not all of it.
+        if (_samples % CheckpointEverySeconds == 0)
+        {
+            RecorderLog.Write($"Проверка: процесс {_pid}, кадров пришло {fps.TrackedPresents}, на переднем плане был {fps.LastForeground}.");
+            Save(fps.FramesSoFar());
+        }
     }
+
+    int FindGame()
+    {
+#if DEBUG
+        if (TestScope.Arg("--test-pid") is { } testPid) return int.Parse(testPid);
+#endif
+        var cs2 = Process.GetProcessesByName("cs2");
+        try
+        {
+            if (cs2.Length > 1 && _lastGameCount != cs2.Length)
+                RecorderLog.Write($"Найдено процессов cs2: {cs2.Length} ({string.Join(", ", cs2.Select(p => p.Id))}).");
+            _lastGameCount = cs2.Length;
+
+            // Stay on the process being recorded: the order of several processes isn't stable, and
+            // hopping between them would restart the session every second.
+            if (cs2.Any(p => p.Id == _pid)) return _pid;
+            return (cs2.FirstOrDefault(p => p.MainWindowHandle != IntPtr.Zero) ?? cs2.FirstOrDefault())?.Id ?? 0;
+        }
+        finally
+        {
+            foreach (var p in cs2) p.Dispose();
+        }
+    }
+
+    int _lastGameCount;
 
     void Begin(int pid)
     {
         (_pid, _start, _cpuMax, _gpuMax, _cpuSum, _gpuSum, _samples, _gpuSamples) = (pid, DateTime.Now, null, null, 0, 0, 0, 0);
         _preset = GraphicsPresets.DetectCurrent();
         fps!.Track(pid);
+        RecorderLog.Status("recording", $"Идёт запись с {_start:HH:mm}.");
     }
 
     /// <summary>Saves the session in progress, if it was long enough to mean anything.</summary>
     public void Finish()
     {
         if (_pid == 0 || fps == null) return;
+        int pid = _pid;
         _pid = 0;
         var frames = fps.StopTracking();
-        if (frames.Seconds < MinMinutes * 60) return;
+        RecorderLog.Write($"Сессия pid={pid} завершена: кадров {frames.Frames}, {frames.Seconds:0.0} с на переднем плане, тиков {_samples}.");
+        Save(frames);
+    }
+
+    void Save(FrameTimes frames)
+    {
+        if (frames.Seconds < MinMinutes * 60)
+        {
+            RecorderLog.Write($"Не сохраняю: {frames.Seconds:0.0} с меньше минимума {MinMinutes * 60:0} с.");
+            return;
+        }
         try
         {
-            SessionLog.Add(new GameSession(_start, frames.Seconds / 60, frames.AverageFps, frames.Low1PercentFps,
+            SessionLog.Save(new GameSession(_start, frames.Seconds / 60, frames.AverageFps, frames.Low1PercentFps,
                 _cpuMax, _gpuMax, _samples > 0 ? _cpuSum / _samples : 0, _gpuSamples > 0 ? _gpuSum / _gpuSamples : null, _preset));
+            RecorderLog.Write($"Сохранено: {frames.AverageFps:0} FPS, 1% low {frames.Low1PercentFps:0}, {frames.Seconds / 60:0.0} мин.");
         }
-        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
+        catch (Exception e)
+        {
+            // Losing one save must not take the watermark down in the middle of a game.
+            RecorderLog.Write($"Ошибка сохранения: {e.GetType().Name}: {e.Message}");
+        }
     }
 }

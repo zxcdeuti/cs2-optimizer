@@ -22,6 +22,10 @@ public partial class MapsView : UserControl
 
     bool Ru => LangRu.IsChecked == true;
 
+    string RuName(PlaceMark p) => Callouts.RadarName(_mapId, p);
+
+    string EnName(PlaceMark p) => Callouts.RadarEnName(_mapId, p);
+
     async void OnLoaded(object sender, RoutedEventArgs e)
     {
         if (_built) return;
@@ -227,7 +231,7 @@ public partial class MapsView : UserControl
         double k = _zoom;
         var text = new TextBlock
         {
-            Text = Ru ? p.Ru : p.En, FontFamily = (FontFamily)FindResource("DisplayFont"), FontSize = Math.Max(7, 16 * k), FontWeight = FontWeights.SemiBold,
+            Text = Ru ? RuName(p) : EnName(p), FontFamily = (FontFamily)FindResource("DisplayFont"), FontSize = Math.Max(7, 16 * k), FontWeight = FontWeights.SemiBold,
             Foreground = selected ? (Brush)FindResource("AccentInkBrush") : Brushes.White,
         };
         var label = new Border
@@ -237,7 +241,7 @@ public partial class MapsView : UserControl
             BorderBrush = selected ? (Brush)FindResource("AccentBrush") : new SolidColorBrush(Color.FromRgb(0x3A, 0x3A, 0x3E)),
             BorderThickness = new Thickness(k),
             Opacity = hit ? 1 : 0.22,
-            ToolTip = Ru ? p.En : p.Ru,
+            ToolTip = Ru ? EnName(p) : RuName(p),
         };
         if (selected) Panel.SetZIndex(label, 10);
         // Rough spot until Declutter places it with the real size.
@@ -255,7 +259,7 @@ public partial class MapsView : UserControl
         var places = _radar.Places
             .Where(p => _query.Length == 0 || Matches(p, _query))
             .GroupBy(p => p.Key).Select(g => g.First())
-            .OrderBy(p => Ru ? p.Ru : p.En).ToList();
+            .OrderBy(p => Ru ? RuName(p) : EnName(p)).ToList();
 
         ListTitle.Text = _query.Length == 0 ? "ВСЕ ЗОНЫ" : places.Count > 0 ? $"НАЙДЕНО: {places.Count}" : NotHere();
         foreach (var p in places)
@@ -269,7 +273,7 @@ public partial class MapsView : UserControl
             }
             row.Children.Add(new TextBlock
             {
-                Text = Ru ? p.Ru : p.En, FontSize = 13.5, TextTrimming = TextTrimming.CharacterEllipsis,
+                Text = Ru ? RuName(p) : EnName(p), FontSize = 13.5, TextTrimming = TextTrimming.CharacterEllipsis,
                 Foreground = (Brush)FindResource(p.Key == _selected?.Key ? "AccentBrush" : "TextBrush"),
             });
             var border = new Border { Child = row, BorderBrush = (Brush)FindResource("LineBrush"), BorderThickness = new Thickness(0, 0, 0, 1), Padding = new Thickness(0, 8, 0, 8) };
@@ -357,8 +361,8 @@ public partial class MapsView : UserControl
         else Render(rebuildList: ModeBook.IsChecked != true); // keep the handbook's scroll position
 
         var slang = Callouts.ForPlace(_mapId, p.Key);
-        InfoEn.Text = p.En;
-        InfoRu.Text = p.Ru;
+        InfoEn.Text = EnName(p);
+        InfoRu.Text = RuName(p);
         InfoSlang.Text = slang != null ? "КАК ГОВОРЯТ: " + slang.Ru.ToUpperInvariant() : "";
         InfoSlang.Visibility = slang != null ? Visibility.Visible : Visibility.Collapsed;
         InfoDesc.Text = slang?.Description ?? "";

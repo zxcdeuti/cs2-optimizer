@@ -13,11 +13,21 @@ public static class TestScope
     public static string Name(string name)
     {
 #if DEBUG
-        return name + Environment.GetEnvironmentVariable("CS2OPT_TEST_SCOPE");
+        return name + (Arg("--test-scope") ?? Environment.GetEnvironmentVariable("CS2OPT_TEST_SCOPE"));
 #else
         return name;
 #endif
     }
+
+#if DEBUG
+    /// <summary>Elevated test runs don't inherit environment variables, so they pass their options as arguments.</summary>
+    public static string? Arg(string key)
+    {
+        var args = Environment.GetCommandLineArgs();
+        int i = Array.IndexOf(args, key);
+        return i >= 0 && i + 1 < args.Length ? args[i + 1] : null;
+    }
+#endif
 }
 
 /// <summary>

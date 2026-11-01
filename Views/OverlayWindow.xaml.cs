@@ -28,14 +28,27 @@ public partial class OverlayWindow : Window
         _timer.Tick += (_, _) => Tick();
         _timer.Start();
         _recorder = new SessionRecorder(_telemetry.Fps);
+        Closing += (_, _) => _closing = true;
         Closed += (_, _) =>
         {
-            _recorder.Finish();
-            _telemetry.Dispose();
+            _timer.Stop();
             _hotkeyWait?.Unregister(null);
+            _recorder.Finish();
+            RecorderLog.Status("off", "Ватермарка выключена.");
+            _telemetry.Dispose();
         };
         Loaded += (_, _) => Tick();
+#if DEBUG
+        if (TestScope.Arg("--test-seconds") is { } seconds)
+        {
+            var stop = new DispatcherTimer { Interval = TimeSpan.FromSeconds(int.Parse(seconds)) };
+            stop.Tick += (_, _) => { stop.Stop(); Close(); };
+            stop.Start();
+        }
+#endif
     }
+
+    bool _closing;
 
     /// <summary>
     /// The main app owns the hotkey and signals this event; it may start after us, so keep trying to open it.
@@ -44,8 +57,13 @@ public partial class OverlayWindow : Window
     void ListenForHotkey()
     {
         if (_hotkeyWait != null || !EventWaitHandle.TryOpenExisting(WatermarkHotkey.ToggleEventName, out var toggle)) return;
+        // BeginInvoke, not Invoke: this runs on a pool thread, where an exception would take the whole process down.
+        // The press can land while the window is closing, and a closing window can't change visibility.
         _hotkeyWait = ThreadPool.RegisterWaitForSingleObject(toggle,
-            (_, _) => Dispatcher.Invoke(() => Visibility = Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible),
+            (_, _) => Dispatcher.BeginInvoke(() =>
+            {
+                if (!_closing) Visibility = Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+            }),
             null, Timeout.Infinite, executeOnlyOnce: false);
     }
 
