@@ -11,6 +11,13 @@ public partial class App : Application
     const string ShowEventName = @"Local\CS2Optimizer.Show";
 
     Mutex? _mainMutex;
+    WatermarkHotkey? _hotkey;
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        _hotkey?.Dispose();
+        base.OnExit(e);
+    }
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -41,7 +48,11 @@ public partial class App : Application
 
         ShutdownMode = ShutdownMode.OnExplicitShutdown; // the window may live hidden in the tray
         var window = new MainWindow();
-        if (!snapshot) ListenForShowRequests(window);
+        if (!snapshot)
+        {
+            ListenForShowRequests(window);
+            _hotkey = new WatermarkHotkey();
+        }
         if (!e.Args.Contains("--tray")) window.Show();
 
         if (!snapshot && AppSettings.Current.OverlayOnStart)

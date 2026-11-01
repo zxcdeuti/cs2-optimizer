@@ -10,7 +10,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>CS2Optimizer</AssemblyName>
     <RootNamespace>CS2Optimizer</RootNamespace>
-    <Version>2.1.0</Version>
+    <Version>2.2.0</Version>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
   </PropertyGroup>
 

@@ -17,6 +17,7 @@ public partial class OverlayWindow : Window
     readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(1) };
     OverlaySettings _settings = OverlaySettings.Load();
     DateTime _settingsStamp;
+    RegisteredWaitHandle? _hotkeyWait;
 
     public OverlayWindow()
     {
@@ -25,8 +26,20 @@ public partial class OverlayWindow : Window
         SizeChanged += (_, _) => Place();
         _timer.Tick += (_, _) => Tick();
         _timer.Start();
-        Closed += (_, _) => _telemetry.Dispose();
+        Closed += (_, _) => { _telemetry.Dispose(); _hotkeyWait?.Unregister(null); };
         Loaded += (_, _) => Tick();
+    }
+
+    /// <summary>
+    /// The main app owns the hotkey and signals this event; it may start after us, so keep trying to open it.
+    /// We only open, never create it: an event made by an elevated process couldn't be opened by the main app.
+    /// </summary>
+    void ListenForHotkey()
+    {
+        if (_hotkeyWait != null || !EventWaitHandle.TryOpenExisting(WatermarkHotkey.ToggleEventName, out var toggle)) return;
+        _hotkeyWait = ThreadPool.RegisterWaitForSingleObject(toggle,
+            (_, _) => Dispatcher.Invoke(() => Visibility = Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible),
+            null, Timeout.Infinite, executeOnlyOnce: false);
     }
 
     public static bool TryClaimSingleInstance()
@@ -53,6 +66,7 @@ public partial class OverlayWindow : Window
             if (!_settings.Enabled) { Close(); return; }
             Place();
         }
+        ListenForHotkey();
 
         Bar.Show(_telemetry.Sample(), _settings);
 

@@ -11,8 +11,13 @@ public record AppSettings(
     bool OverlayOnStart = false,
     bool OverlayAsAdmin = true,
     bool MapLabelsRu = true,
-    bool TrayHintShown = false)
+    bool TrayHintShown = false,
+    bool HotkeyEnabled = true,
+    string Hotkey = "Alt+W")
 {
+    /// <summary>Raised after Save/Reset so live features (the watermark hotkey) can pick up changes.</summary>
+    public static event Action? Changed;
+
     public static readonly string DataDir = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CS2Optimizer");
 
@@ -32,9 +37,14 @@ public record AppSettings(
         Directory.CreateDirectory(DataDir);
         File.WriteAllText(FilePath, JsonSerializer.Serialize(settings));
         if (Autostart.Enabled) Autostart.Set(true, settings.StartMinimized); // keep the --tray flag in sync
+        Changed?.Invoke();
     }
 
-    public static void Reset() => Current = new();
+    public static void Reset()
+    {
+        Current = new();
+        Changed?.Invoke();
+    }
 }
 
 /// <summary>"Start with Windows" through the current user's Run key.</summary>

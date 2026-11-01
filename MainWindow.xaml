@@ -26,7 +26,7 @@
                                VerticalAlignment="Center" Margin="12,0,0,0"/>
                     <TextBlock Text="/OPT" FontFamily="{StaticResource DisplayFont}" FontWeight="Bold" FontSize="17"
                                Foreground="{StaticResource DimBrush}" VerticalAlignment="Center"/>
-                    <TextBlock Text="v2.1" Style="{StaticResource Label}" Margin="10,3,0,0"/>
+                    <TextBlock Text="v2.2" Style="{StaticResource Label}" Margin="10,3,0,0"/>
                 </StackPanel>
 
                 <Rectangle DockPanel.Dock="Top" Style="{StaticResource Hairline}" Margin="0,22,0,14"/>

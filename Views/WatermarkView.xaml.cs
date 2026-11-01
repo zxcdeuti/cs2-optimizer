@@ -36,7 +36,75 @@ public partial class WatermarkView : UserControl
         _telemetry ??= new Telemetry(withFps: false);
         Refresh();
         _timer.Start();
+
+        if (WatermarkHotkey.Instance is { } hk)
+        {
+            hk.StateChanged -= ShowHotkey;
+            hk.StateChanged += ShowHotkey;
+        }
+        ShowHotkey();
     }
+
+    // ── hotkey ─────────────────────────────────────────────────────────────────
+
+    bool _recording;
+
+    void ShowHotkey()
+    {
+        var s = AppSettings.Current;
+        HotkeyToggle.IsChecked = s.HotkeyEnabled;
+        if (!_recording) HotkeyText.Text = KeyCombo.Parse(s.Hotkey)?.ToString().Replace("+", " + ") ?? "не задан";
+        var problem = WatermarkHotkey.Instance?.Problem;
+        HotkeyStatus.Foreground = (Brush)FindResource(problem != null && s.HotkeyEnabled ? "WarnBrush" : "MutedBrush");
+        HotkeyStatus.Text = WatermarkHotkey.Instance == null ? "Бинд работает, пока приложение запущено."
+            : problem ?? "В игре прячет и показывает ватермарку, а если она выключена — запускает. Работает и из трея.";
+    }
+
+    void Hotkey_Click(object sender, RoutedEventArgs e)
+    {
+        _recording = true;
+        if (WatermarkHotkey.Instance is { } hk) hk.Paused = true;
+        HotkeyText.Text = "жми сочетание…";
+        HotkeyBtn.Focus();
+    }
+
+    void Hotkey_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (!_recording) return;
+        e.Handled = true;
+        var key = e.Key == System.Windows.Input.Key.System ? e.SystemKey : e.Key;
+        var mods = System.Windows.Input.Keyboard.Modifiers;
+        if (key == System.Windows.Input.Key.Escape) { StopRecording(); return; }
+        if (key is System.Windows.Input.Key.LeftCtrl or System.Windows.Input.Key.RightCtrl or System.Windows.Input.Key.LeftAlt
+            or System.Windows.Input.Key.RightAlt or System.Windows.Input.Key.LeftShift or System.Windows.Input.Key.RightShift)
+        {
+            HotkeyText.Text = new KeyCombo(mods, System.Windows.Input.Key.None).ToString().Replace("+None", " + …");
+            return;
+        }
+        if (!KeyCombo.IsAllowed(mods, key))
+        {
+            HotkeyStatus.Text = "Одиночная буква сработает в чате — добавь Ctrl, Alt или Shift, либо возьми F-клавишу.";
+            HotkeyStatus.Foreground = (Brush)FindResource("WarnBrush");
+            return;
+        }
+        AppSettings.Save(AppSettings.Current with { Hotkey = new KeyCombo(mods, key).ToString(), HotkeyEnabled = true });
+        StopRecording();
+    }
+
+    void Hotkey_LostFocus(object sender, System.Windows.Input.KeyboardFocusChangedEventArgs e)
+    {
+        if (_recording) StopRecording();
+    }
+
+    void StopRecording()
+    {
+        _recording = false;
+        if (WatermarkHotkey.Instance is { } hk) hk.Paused = false; // re-registers and refreshes the status
+        ShowHotkey();
+    }
+
+    void HotkeyToggle_Click(object sender, RoutedEventArgs e) =>
+        AppSettings.Save(AppSettings.Current with { HotkeyEnabled = HotkeyToggle.IsChecked == true });
 
     static void Check(Panel host, string tag)
     {

@@ -41,6 +41,27 @@
                 </Button>
             </Grid>
 
+            <!-- Hotkey -->
+            <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,1,0,1" Padding="0,14" Margin="0,0,0,20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="БИНД" Style="{StaticResource Label}" Margin="0,0,16,0"/>
+                    <Button x:Name="HotkeyBtn" Grid.Column="1" Style="{StaticResource SecondaryButton}" MinWidth="130"
+                            Click="Hotkey_Click" PreviewKeyDown="Hotkey_KeyDown" LostKeyboardFocus="Hotkey_LostFocus"
+                            ToolTip="Нажми и введи новое сочетание. Esc — отмена.">
+                        <TextBlock x:Name="HotkeyText" FontFamily="{StaticResource MonoFont}" FontSize="13"/>
+                    </Button>
+                    <TextBlock x:Name="HotkeyStatus" Grid.Column="2" Style="{StaticResource Muted}" Margin="16,0" VerticalAlignment="Center"/>
+                    <CheckBox x:Name="HotkeyToggle" Grid.Column="3" Style="{StaticResource Toggle}" Padding="0" Click="HotkeyToggle_Click"
+                              VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
             <!-- Preview: mock game frame -->
             <Border CornerRadius="4" ClipToBounds="True" Height="260" BorderBrush="{StaticResource LineBrush}" BorderThickness="1">
                 <Border.Background>
