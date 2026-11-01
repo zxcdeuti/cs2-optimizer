@@ -31,6 +31,8 @@ public partial class SessionsView : UserControl
         // A crashed or killed watermark leaves its last state behind, so the running check comes first.
         var (title, detail, dot) = !OverlayControl.IsRunning
             ? ("ЗАПИСЬ НЕ ИДЁТ", "Ватермарка выключена. Включи её или нажми «Играть», замер запишется сам.", "DimBrush")
+            : RecorderLog.IsStuck()
+            ? ("ВАТЕРМАРКА НЕ ОТВЕЧАЕТ", "Запись не идёт. Выключи ватермарку и включи снова в её разделе.", "WarnBrush")
             : state?.State switch
             {
                 "recording" => ("ИДЁТ ЗАПИСЬ", state.Detail, "AccentBrush"),

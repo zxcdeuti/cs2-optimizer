@@ -129,6 +129,7 @@ public partial class App : Application
 
     static void OnUnhandled(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
+        RecorderLog.Write($"Ошибка: {e.Exception.GetType().Name}: {e.Exception.Message}");
         MessageBox.Show(e.Exception.Message, "CS2 Optimizer — ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         e.Handled = true;
     }

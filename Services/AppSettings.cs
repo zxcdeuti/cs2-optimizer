@@ -22,8 +22,7 @@ public record AppSettings(
     /// <summary>Raised after Save/Reset so live features (the watermark hotkey) can pick up changes.</summary>
     public static event Action? Changed;
 
-    public static readonly string DataDir = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CS2Optimizer");
+    public static readonly string DataDir = Path.Combine(TestScope.AppData, "CS2Optimizer");
 
     static readonly string FilePath = Path.Combine(DataDir, "settings.json");
 

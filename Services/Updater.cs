@@ -19,6 +19,13 @@ public static class TestScope
 #endif
     }
 
+    /// <summary>Where the app keeps its data; test runs point it at their own folder.</summary>
+    public static string AppData =>
+#if DEBUG
+        Arg("--test-data") ??
+#endif
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
 #if DEBUG
     /// <summary>Elevated test runs don't inherit environment variables, so they pass their options as arguments.</summary>
     public static string? Arg(string key)

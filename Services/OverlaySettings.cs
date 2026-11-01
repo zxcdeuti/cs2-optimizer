@@ -28,13 +28,15 @@ public record OverlaySettings(
     string Tag = "",
     int Offset = 14)
 {
-    public static readonly string FilePath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CS2Optimizer", "overlay.json");
+    public static readonly string FilePath = Path.Combine(TestScope.AppData, "CS2Optimizer", "overlay.json");
 
-    public static OverlaySettings Load()
+    public static OverlaySettings Load() => TryLoad() ?? new();
+
+    /// <summary>Null when the file can't be read right now, e.g. the main window is writing it at this moment.</summary>
+    public static OverlaySettings? TryLoad()
     {
-        try { return JsonSerializer.Deserialize<OverlaySettings>(File.ReadAllText(FilePath)) ?? new(); }
-        catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException) { return new(); }
+        try { return JsonSerializer.Deserialize<OverlaySettings>(File.ReadAllText(FilePath)); }
+        catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException) { return null; }
     }
 
     public void Save()

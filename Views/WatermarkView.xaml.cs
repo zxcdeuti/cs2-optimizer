@@ -122,8 +122,9 @@ public partial class WatermarkView : UserControl
         Preview.Margin = new Thickness(Math.Min(_settings.Offset, 40));
 
         bool running = OverlayWindow.IsRunning();
-        StatusDot.Fill = (Brush)FindResource(running ? "AccentBrush" : "DimBrush");
-        StatusText.Text = running ? "РАБОТАЕТ" : "ВЫКЛЮЧЕНА";
+        bool stuck = running && RecorderLog.IsStuck();
+        StatusDot.Fill = (Brush)FindResource(stuck ? "WarnBrush" : running ? "AccentBrush" : "DimBrush");
+        StatusText.Text = stuck ? "НЕ ОТВЕЧАЕТ" : running ? "РАБОТАЕТ" : "ВЫКЛЮЧЕНА";
         StatusSub.Text = running ? "Плашка на экране поверх всех окон." : "Включи — плашка появится поверх всех окон и игр.";
         ToggleText.Text = running ? "Выключить" : "Включить";
         ToggleBtn.Style = (Style)FindResource(running ? "SecondaryButton" : "PrimaryButton");

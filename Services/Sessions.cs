@@ -129,6 +129,18 @@ public static class RecorderLog
         try { return JsonSerializer.Deserialize<RecorderState>(File.ReadAllText(StatePath)); }
         catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException) { return null; }
     }
+
+    /// <summary>The running watermark marks the state file as fresh, so a frozen one can be told from a working one.</summary>
+    public static void Beat()
+    {
+        try { if (File.Exists(StatePath)) File.SetLastWriteTimeUtc(StatePath, DateTime.UtcNow); }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
+    }
+
+    /// <summary>For a watermark process that is running: whether it stopped reporting. Just started ones haven't written "off" over yet.</summary>
+    public static bool IsStuck() =>
+        Read()?.State is "recording" or "waiting" or "no-fps"
+        && DateTime.UtcNow - File.GetLastWriteTimeUtc(StatePath) > TimeSpan.FromSeconds(20);
 }
 
 /// <summary>Runs inside the watermark process, the one with FPS access: one session per CS2 launch.</summary>
