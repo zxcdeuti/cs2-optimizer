@@ -43,6 +43,7 @@ public partial class SystemView : UserControl
         ScoreTitle.Text = "Сканирую…";
         var checks = await Task.Run(SystemInfo.Checks);
         ChecksList.ItemsSource = checks;
+        ScoreTicks.ItemsSource = checks;
         ShowChanges();
 
         int ok = checks.Count(c => c.Ok);

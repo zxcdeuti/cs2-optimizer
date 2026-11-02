@@ -1,54 +1,56 @@
 <UserControl x:Class="CS2Optimizer.Views.SensView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:CS2Optimizer.Views"
              Loaded="OnLoaded">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="48,6,48,48">
-            <TextBlock Text="06 / СЕНСА И МЫШЬ" Style="{StaticResource Eyebrow}"/>
-            <TextBlock Text="Чувствительность" Style="{StaticResource H1}"/>
+        <StackPanel Margin="44,0,44,44" MaxWidth="1160" HorizontalAlignment="Stretch">
+            <TextBlock Text="СЕНСА И МЫШЬ" Style="{StaticResource H1}"/>
             <TextBlock Text="eDPI и сантиметры на 360°, перевод сенсы из других игр и настройки мыши в Windows."
                        Style="{StaticResource Lead}"/>
-            <Rectangle Style="{StaticResource PageRule}"/>
 
             <!-- Calculator -->
-            <TextBlock Text="A — КАЛЬКУЛЯТОР" Style="{StaticResource Label}" Margin="0,0,0,14"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="160"/>
-                    <ColumnDefinition Width="16"/>
-                    <ColumnDefinition Width="160"/>
-                    <ColumnDefinition Width="56"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="56"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+            <ui:Plate Style="{StaticResource SlabPad}">
                 <StackPanel>
-                    <TextBlock Text="DPI МЫШИ" Style="{StaticResource Label}" Margin="0,0,0,6"/>
-                    <TextBox x:Name="DpiBox" Style="{StaticResource Field}" Text="800" TextChanged="Calc_Changed"/>
-                </StackPanel>
-                <StackPanel Grid.Column="2">
-                    <TextBlock Text="СЕНСА В CS2" Style="{StaticResource Label}" Margin="0,0,0,6"/>
-                    <TextBox x:Name="SensBox" Style="{StaticResource Field}" Text="1.1" TextChanged="Calc_Changed"/>
-                </StackPanel>
-                <StackPanel Grid.Column="4">
-                    <TextBlock Text="EDPI" Style="{StaticResource Label}"/>
-                    <TextBlock x:Name="EdpiText" Text="—" Style="{StaticResource Num}" FontSize="46" FontWeight="Light" Margin="0,2,0,0"/>
-                </StackPanel>
-                <StackPanel Grid.Column="6">
-                    <TextBlock Text="СМ НА 360°" Style="{StaticResource Label}"/>
-                    <TextBlock x:Name="Cm360Text" Text="—" Style="{StaticResource Num}" FontSize="46" FontWeight="Light" Margin="0,2,0,0"/>
-                </StackPanel>
-            </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="14"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="52"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="52"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Bottom">
+                            <TextBlock Text="DPI мыши" Style="{StaticResource ColHead}" HorizontalAlignment="Left" Margin="0,0,0,6"/>
+                            <TextBox x:Name="DpiBox" Style="{StaticResource Field}" Text="800" TextChanged="Calc_Changed"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" VerticalAlignment="Bottom">
+                            <TextBlock Text="Сенса в CS2" Style="{StaticResource ColHead}" HorizontalAlignment="Left" Margin="0,0,0,6"/>
+                            <TextBox x:Name="SensBox" Style="{StaticResource Field}" Text="1.1" TextChanged="Calc_Changed"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="4" VerticalAlignment="Bottom">
+                            <TextBlock Text="eDPI" Style="{StaticResource ColHead}" HorizontalAlignment="Left"/>
+                            <TextBlock x:Name="EdpiText" Text="—" Style="{StaticResource BigNum}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="6" VerticalAlignment="Bottom">
+                            <TextBlock Text="См на 360°" Style="{StaticResource ColHead}" HorizontalAlignment="Left"/>
+                            <TextBlock x:Name="Cm360Text" Text="—" Style="{StaticResource BigNum}"/>
+                        </StackPanel>
+                    </Grid>
 
-            <!-- eDPI scale with the typical pro range -->
-            <Grid Margin="0,26,0,0" x:Name="ScaleHost" Height="44" SizeChanged="Scale_SizeChanged">
-                <Rectangle Height="2" Fill="{StaticResource LineStrongBrush}" VerticalAlignment="Top" Margin="0,9,0,0"/>
-                <Canvas x:Name="ScaleCanvas"/>
-            </Grid>
-            <TextBlock x:Name="ScaleNote" Style="{StaticResource Muted}" Margin="0,4,0,0"/>
+                    <!-- eDPI scale with the typical pro range -->
+                    <Grid Margin="0,24,0,0" x:Name="ScaleHost" Height="44" SizeChanged="Scale_SizeChanged">
+                        <Rectangle Height="2" Fill="{StaticResource LineStrongBrush}" VerticalAlignment="Top" Margin="0,9,0,0"/>
+                        <Canvas x:Name="ScaleCanvas"/>
+                    </Grid>
+                    <TextBlock x:Name="ScaleNote" Style="{StaticResource Muted}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </ui:Plate>
 
             <!-- Converter -->
-            <TextBlock Text="B — ПЕРЕВОД ИЗ ДРУГОЙ ИГРЫ" Style="{StaticResource Label}" Margin="0,44,0,12"/>
+            <TextBlock Text="Перевод из другой игры" Style="{StaticResource Section}"/>
             <WrapPanel x:Name="GameHost">
                 <RadioButton Style="{StaticResource Chip}" GroupName="game" Tag="0.07" Content="Valorant" IsChecked="True" Checked="Convert_Changed"/>
                 <RadioButton Style="{StaticResource Chip}" GroupName="game" Tag="0.0066" Content="Overwatch 2" Checked="Convert_Changed"/>
@@ -56,64 +58,64 @@
                 <RadioButton Style="{StaticResource Chip}" GroupName="game" Tag="0.022" Content="Apex Legends" Checked="Convert_Changed"/>
                 <RadioButton Style="{StaticResource Chip}" GroupName="game" Tag="0.022" Content="CS:GO" Checked="Convert_Changed"/>
             </WrapPanel>
-            <Grid Margin="0,12,0,0">
+            <Grid Margin="0,10,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="160"/>
-                    <ColumnDefinition Width="56"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="52"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel>
-                    <TextBlock Text="СЕНСА ТАМ" Style="{StaticResource Label}" Margin="0,0,0,6"/>
+                <StackPanel VerticalAlignment="Bottom">
+                    <TextBlock Text="Сенса там" Style="{StaticResource ColHead}" HorizontalAlignment="Left" Margin="0,0,0,6"/>
                     <TextBox x:Name="OtherBox" Style="{StaticResource Field}" Text="0.35" TextChanged="Convert_Changed"/>
                 </StackPanel>
-                <StackPanel Grid.Column="2">
-                    <TextBlock Text="СЕНСА В CS2" Style="{StaticResource Label}"/>
-                    <TextBlock x:Name="ConvertedText" Text="—" Style="{StaticResource Num}" FontSize="46" FontWeight="Light"
-                               Foreground="{StaticResource AccentBrush}" Margin="0,2,0,0"/>
+                <StackPanel Grid.Column="2" VerticalAlignment="Bottom">
+                    <TextBlock Text="Сенса в CS2" Style="{StaticResource ColHead}" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="ConvertedText" Text="—" Style="{StaticResource BigNum}" Foreground="{StaticResource AccentBrush}"/>
                 </StackPanel>
-                <StackPanel Grid.Column="4" VerticalAlignment="Bottom" Margin="0,0,0,8">
-                    <Button Style="{StaticResource SecondaryButton}" Click="CopySens_Click">
-                        <TextBlock x:Name="CopySensText" Text="Копировать команду"/>
-                    </Button>
-                </StackPanel>
+                <Button Grid.Column="4" Style="{StaticResource SecondaryButton}" Click="CopySens_Click" VerticalAlignment="Bottom">
+                    <TextBlock x:Name="CopySensText" Text="Копировать команду"/>
+                </Button>
             </Grid>
-            <TextBlock Text="Перевод по углу поворота на одно движение мыши — то же расстояние на коврике даёт тот же поворот камеры."
+            <TextBlock Text="Перевод по углу поворота на одно движение мыши: то же расстояние на коврике даёт тот же поворот камеры."
                        Style="{StaticResource Muted}" Margin="0,10,0,0"/>
 
             <!-- Windows mouse -->
-            <TextBlock Text="C — МЫШЬ В WINDOWS" Style="{StaticResource Label}" Margin="0,44,0,6"/>
-            <Rectangle Style="{StaticResource Hairline}"/>
-            <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,16">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="44"/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock x:Name="AccelStatus" FontFamily="{StaticResource MonoFont}" FontSize="11" FontWeight="Bold" Margin="0,3,0,0"/>
-                    <StackPanel Grid.Column="1" Margin="0,0,24,0">
-                        <TextBlock Text="Акселерация («Повышенная точность указателя»)" FontSize="14.5" FontWeight="SemiBold"/>
-                        <TextBlock x:Name="AccelDetail" Style="{StaticResource Muted}" Margin="0,4,0,0" MaxWidth="640" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <Button x:Name="AccelBtn" Grid.Column="2" Style="{StaticResource PrimaryButton}" Padding="16,8" Content="Выключить"
-                            Click="Accel_Click" VerticalAlignment="Center"/>
-                </Grid>
-            </Border>
-            <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,16">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="44"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock x:Name="SpeedStatus" FontFamily="{StaticResource MonoFont}" FontSize="11" FontWeight="Bold" Margin="0,3,0,0"/>
-                    <StackPanel Grid.Column="1">
-                        <TextBlock Text="Скорость указателя" FontSize="14.5" FontWeight="SemiBold"/>
-                        <TextBlock x:Name="SpeedDetail" Style="{StaticResource Muted}" Margin="0,4,0,0" MaxWidth="640" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
+            <TextBlock Text="Мышь в Windows" Style="{StaticResource Section}"/>
+            <ui:Plate Style="{StaticResource Slab}">
+                <StackPanel Margin="0,0,0,-1">
+                    <Border Style="{StaticResource Row}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="34"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="AccelStatus" Style="{StaticResource StatusIcon}"/>
+                            <StackPanel Grid.Column="1" Margin="0,0,24,0">
+                                <TextBlock Text="Акселерация («Повышенная точность указателя»)" Style="{StaticResource RowTitle}"/>
+                                <TextBlock x:Name="AccelDetail" Style="{StaticResource Muted}" Margin="0,3,0,0" MaxWidth="660" HorizontalAlignment="Left"/>
+                            </StackPanel>
+                            <Button x:Name="AccelBtn" Grid.Column="2" Style="{StaticResource PrimaryButton}" Padding="16,8" Content="Выключить"
+                                    Click="Accel_Click" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="34"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="SpeedStatus" Style="{StaticResource StatusIcon}"/>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Скорость указателя" Style="{StaticResource RowTitle}"/>
+                                <TextBlock x:Name="SpeedDetail" Style="{StaticResource Muted}" Margin="0,3,0,0" MaxWidth="660" HorizontalAlignment="Left"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </ui:Plate>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

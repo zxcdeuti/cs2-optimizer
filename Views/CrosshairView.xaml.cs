@@ -21,6 +21,8 @@ public partial class CrosshairView : UserControl
         ["pink"] = new(2, 1, 1, false, false, false, 255, 0, 255, 255),
     };
 
+    public static CrosshairState DefaultState => Presets["best"];
+
     bool _ready;
 
     public CrosshairView() => InitializeComponent();
@@ -29,7 +31,7 @@ public partial class CrosshairView : UserControl
     {
         if (!_ready)
         {
-            Apply(LoadState() ?? Presets["best"]);
+            Apply(LoadState() ?? DefaultState);
             _ready = true;
         }
         Update();
@@ -73,18 +75,8 @@ public partial class CrosshairView : UserControl
 
         int zoom = (int)ZoomSlider.Value;
         double cx = Math.Round(w / 2), cy = Math.Round(h / 2);
-        double half = s.Thickness / 2.0;
 
-        // Rectangles in game pixels, relative to the screen centre.
-        var parts = new List<Rect>();
-        if (s.Length > 0)
-        {
-            parts.Add(new Rect(s.Gap, -half, s.Length, s.Thickness));
-            parts.Add(new Rect(-s.Gap - s.Length, -half, s.Length, s.Thickness));
-            parts.Add(new Rect(-half, s.Gap, s.Thickness, s.Length));
-            if (!s.T) parts.Add(new Rect(-half, -s.Gap - s.Length, s.Thickness, s.Length));
-        }
-        if (s.Dot) parts.Add(new Rect(-half, -half, s.Thickness, s.Thickness));
+        var parts = Parts(s);
 
         if (s.Outline)
             foreach (var r in parts)
@@ -102,6 +94,22 @@ public partial class CrosshairView : UserControl
         }
     }
 
+    /// <summary>The crosshair's rectangles in game pixels, relative to the screen centre.</summary>
+    public static List<Rect> Parts(CrosshairState s)
+    {
+        double half = s.Thickness / 2.0;
+        var parts = new List<Rect>();
+        if (s.Length > 0)
+        {
+            parts.Add(new Rect(s.Gap, -half, s.Length, s.Thickness));
+            parts.Add(new Rect(-s.Gap - s.Length, -half, s.Length, s.Thickness));
+            parts.Add(new Rect(-half, s.Gap, s.Thickness, s.Length));
+            if (!s.T) parts.Add(new Rect(-half, -s.Gap - s.Length, s.Thickness, s.Length));
+        }
+        if (s.Dot) parts.Add(new Rect(-half, -half, s.Thickness, s.Thickness));
+        return parts;
+    }
+
     void Preview_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         if (_ready) Redraw(Current);
@@ -112,7 +120,7 @@ public partial class CrosshairView : UserControl
         if (sender is not RadioButton { Tag: string tag } || PreviewBg == null) return;
         bool grid = tag == "grid";
         GridOverlay.Visibility = grid ? Visibility.Visible : Visibility.Collapsed;
-        PreviewBg.Background = new BrushConverter().ConvertFromString(grid ? "#0E0E0F" : tag) as Brush;
+        PreviewBg.Background = new BrushConverter().ConvertFromString(grid ? "#0D1218" : tag) as Brush;
     }
 
     void Preset_Click(object sender, RoutedEventArgs e)
@@ -146,7 +154,7 @@ public partial class CrosshairView : UserControl
         try
         {
             var file = Autoexec.WriteBlock("прицел", CommandBox.Text.Split("; "));
-            HintText.Text = $"Сохранено в {file}. Чтобы прицел ставился сам, добавь +exec autoexec в параметры запуска (раздел 03).";
+            HintText.Text = $"Сохранено в {file}. Чтобы прицел ставился сам, добавь +exec autoexec в параметры запуска (раздел «Параметры запуска»).";
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
@@ -154,7 +162,7 @@ public partial class CrosshairView : UserControl
         }
     }
 
-    static CrosshairState? LoadState()
+    public static CrosshairState? LoadState()
     {
         try { return JsonSerializer.Deserialize<CrosshairState>(File.ReadAllText(StatePath)); }
         catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException) { return null; }

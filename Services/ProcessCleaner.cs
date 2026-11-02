@@ -39,7 +39,7 @@ public class ProcGroup : INotifyPropertyChanged
         }
     }
 
-    public string RuleLabel => Rule switch { "close" => "ВСЕГДА ЗАКРЫВАТЬ", "keep" => "НЕ ТРОГАТЬ", _ => "АВТО" };
+    public string RuleLabel => Rule switch { "close" => "Всегда закрывать", "keep" => "Не трогать", _ => "Авто" };
 
     /// <summary>Accent only for a rule the user actually set.</summary>
     public System.Windows.Media.Brush RuleBrush =>

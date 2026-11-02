@@ -80,10 +80,11 @@ public partial class MapsView : UserControl
 
         _radar = radar;
         StatusText.Text = "";
-        MapSub.Text = $"ЗОН НА КАРТЕ: {radar.Places.Count}";
+        MapSub.Text = $"Зон на карте: {radar.Places.Count}. Радар из файлов твоей CS2.";
 
         LayerHost.Children.Clear();
-        _layer = radar.Layers.ContainsKey("default") ? "default" : radar.Layers.Keys.First();
+        // Start on the level with the most labels: on Train nearly every zone counts as the lower one.
+        _layer = radar.Layers.Keys.OrderByDescending(l => radar.Places.Count(p => p.Layer == l)).ThenBy(l => l == "default" ? 0 : 1).First();
         if (radar.Layers.Count > 1)
         {
             foreach (var layer in radar.Layers.Keys)
@@ -237,8 +238,8 @@ public partial class MapsView : UserControl
         var label = new Border
         {
             Child = text, Tag = p, Padding = new Thickness(6 * k, 1.5 * k, 6 * k, 2.5 * k), CornerRadius = new CornerRadius(2 * k), Cursor = Cursors.Hand,
-            Background = selected ? (Brush)FindResource("AccentBrush") : new SolidColorBrush(Color.FromArgb(0xD9, 0x0C, 0x0C, 0x0D)),
-            BorderBrush = selected ? (Brush)FindResource("AccentBrush") : new SolidColorBrush(Color.FromRgb(0x3A, 0x3A, 0x3E)),
+            Background = selected ? (Brush)FindResource("AccentBrush") : new SolidColorBrush(Color.FromArgb(0xE0, 0x10, 0x15, 0x1D)),
+            BorderBrush = selected ? (Brush)FindResource("AccentBrush") : new SolidColorBrush(Color.FromRgb(0x3D, 0x4A, 0x5D)),
             BorderThickness = new Thickness(k),
             Opacity = hit ? 1 : 0.22,
             ToolTip = Ru ? EnName(p) : RuName(p),
@@ -261,13 +262,13 @@ public partial class MapsView : UserControl
             .GroupBy(p => p.Key).Select(g => g.First())
             .OrderBy(p => Ru ? RuName(p) : EnName(p)).ToList();
 
-        ListTitle.Text = _query.Length == 0 ? "ВСЕ ЗОНЫ" : places.Count > 0 ? $"НАЙДЕНО: {places.Count}" : NotHere();
+        ListTitle.Text = _query.Length == 0 ? "Все зоны" : places.Count > 0 ? $"Найдено: {places.Count}" : NotHere();
         foreach (var p in places)
         {
             var row = new DockPanel { Background = Brushes.Transparent, Cursor = Cursors.Hand };
             if (_radar.Layers.Count > 1)
             {
-                var layer = new TextBlock { Text = p.Layer == "default" ? "ВЕРХ" : "НИЗ", Style = (Style)FindResource("Label") };
+                var layer = new TextBlock { Text = p.Layer == "default" ? "Верх" : "Низ", Style = (Style)FindResource("ColHead") };
                 DockPanel.SetDock(layer, Dock.Right);
                 row.Children.Add(layer);
             }
@@ -288,7 +289,7 @@ public partial class MapsView : UserControl
         var q = _query.Trim().ToLowerInvariant().Replace('ё', 'е');
         var spots = Callouts.All.Where(c => c.Map == _mapId && (q.Length == 0
             || c.En.ToLowerInvariant().Contains(q) || c.Ru.ToLowerInvariant().Replace('ё', 'е').Contains(q))).ToList();
-        ListTitle.Text = spots.Count == 0 ? (q.Length > 0 ? NotHere() : "ДЛЯ ЭТОЙ КАРТЫ СПРАВОЧНИКА НЕТ") : $"КОЛАУТОВ: {spots.Count}";
+        ListTitle.Text = spots.Count == 0 ? (q.Length > 0 ? NotHere() : "Для этой карты справочника нет") : $"Колаутов: {spots.Count}";
 
         foreach (var zone in Callouts.Zones)
         {
@@ -297,7 +298,7 @@ public partial class MapsView : UserControl
             bool site = zone is "A" or "B";
             PlaceList.Children.Add(new TextBlock
             {
-                Text = site ? $"ЗОНА {zone}" : zone, Style = (Style)FindResource("Label"), Margin = new Thickness(0, 14, 0, 2),
+                Text = site ? $"Точка {zone}" : zone, Style = (Style)FindResource("Label"), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 14, 0, 2),
                 Foreground = (Brush)FindResource(site ? "AccentBrush" : "MutedBrush"),
             });
             foreach (var c in inZone)
@@ -306,9 +307,9 @@ public partial class MapsView : UserControl
                 var box = new StackPanel { Background = Brushes.Transparent, Cursor = Cursors.Hand };
                 var line = new WrapPanel();
                 line.Children.Add(new TextBlock { Text = c.En, FontFamily = (FontFamily)FindResource("DisplayFont"), FontSize = 14, FontWeight = FontWeights.SemiBold });
-                line.Children.Add(new TextBlock { Text = c.Ru, FontSize = 12.5, Foreground = (Brush)FindResource("AccentBrush"), Margin = new Thickness(8, 1, 0, 0) });
+                line.Children.Add(new TextBlock { Text = c.Ru, FontSize = 12.5, Foreground = (Brush)FindResource("InfoBrush"), Margin = new Thickness(8, 1, 0, 0) });
                 if (place != null)
-                    line.Children.Add(new TextBlock { Text = "НА РАДАРЕ", Style = (Style)FindResource("Label"), Margin = new Thickness(8, 2, 0, 0) });
+                    line.Children.Add(new TextBlock { Text = "на радаре", Style = (Style)FindResource("ColHead"), Margin = new Thickness(8, 1, 0, 0) });
                 box.Children.Add(line);
                 box.Children.Add(new TextBlock { Text = c.Description, Style = (Style)FindResource("Muted"), FontSize = 12, Margin = new Thickness(0, 2, 0, 0) });
                 var border = new Border { Child = box, BorderBrush = (Brush)FindResource("LineBrush"), BorderThickness = new Thickness(0, 0, 0, 1), Padding = new Thickness(0, 7, 0, 8) };
@@ -331,7 +332,7 @@ public partial class MapsView : UserControl
         Render(rebuildList: false);
         InfoEn.Text = c.En;
         InfoRu.Text = c.Ru;
-        InfoSlang.Text = $"{c.Zone} · ОТДЕЛЬНОЙ ЗОНЫ НА РАДАРЕ НЕТ";
+        InfoSlang.Text = $"{c.Zone}. Отдельной зоны на радаре нет.";
         InfoSlang.Visibility = Visibility.Visible;
         InfoDesc.Text = c.Description;
         InfoDesc.Visibility = Visibility.Visible;
@@ -347,7 +348,7 @@ public partial class MapsView : UserControl
     string NotHere()
     {
         var elsewhere = Callouts.Search(_query).Select(c => Callouts.MapName(c.Map)).Distinct().ToList();
-        return elsewhere.Count > 0 ? $"ЗДЕСЬ НЕТ · ЕСТЬ НА: {string.Join(", ", elsewhere).ToUpperInvariant()}" : "НИЧЕГО НЕ НАЙДЕНО";
+        return elsewhere.Count > 0 ? $"Здесь нет, есть на: {string.Join(", ", elsewhere)}" : "Ничего не найдено";
     }
 
     void Select(PlaceMark p)
@@ -363,7 +364,7 @@ public partial class MapsView : UserControl
         var slang = Callouts.ForPlace(_mapId, p.Key);
         InfoEn.Text = EnName(p);
         InfoRu.Text = RuName(p);
-        InfoSlang.Text = slang != null ? "КАК ГОВОРЯТ: " + slang.Ru.ToUpperInvariant() : "";
+        InfoSlang.Text = slang != null ? "Как говорят: " + slang.Ru : "";
         InfoSlang.Visibility = slang != null ? Visibility.Visible : Visibility.Collapsed;
         InfoDesc.Text = slang?.Description ?? "";
         InfoDesc.Visibility = slang != null ? Visibility.Visible : Visibility.Collapsed;

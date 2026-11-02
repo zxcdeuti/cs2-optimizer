@@ -1,18 +1,9 @@
 <UserControl x:Class="CS2Optimizer.Views.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:CS2Optimizer.Views"
              Loaded="OnLoaded">
     <UserControl.Resources>
-        <Style x:Key="Row" TargetType="Border">
-            <Setter Property="BorderBrush" Value="{StaticResource LineBrush}"/>
-            <Setter Property="BorderThickness" Value="0,0,0,1"/>
-            <Setter Property="Padding" Value="0,14"/>
-        </Style>
-        <Style x:Key="RowTitle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="14.5"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
-        </Style>
         <Style x:Key="Switch" TargetType="CheckBox" BasedOn="{StaticResource Toggle}">
             <Setter Property="Padding" Value="0"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -20,181 +11,197 @@
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="48,6,48,48">
-            <TextBlock Text="11 / НАСТРОЙКИ" Style="{StaticResource Eyebrow}"/>
-            <TextBlock Text="Настройки" Style="{StaticResource H1}"/>
-            <TextBlock Text="Как приложение запускается, сворачивается и что делает само." Style="{StaticResource Lead}"/>
-            <Rectangle Style="{StaticResource PageRule}"/>
+        <StackPanel Margin="44,0,44,44" MaxWidth="1160" HorizontalAlignment="Stretch">
+            <TextBlock Text="НАСТРОЙКИ" Style="{StaticResource H1}"/>
+            <TextBlock Text="Как приложение запускается, сворачивается и что делает само." Style="{StaticResource Lead}" Margin="0,6,0,0"/>
 
             <!-- Tray & startup -->
-            <TextBlock Text="A — ТРЕЙ И ЗАПУСК" Style="{StaticResource Label}" Margin="0,0,0,6"/>
-            <Rectangle Style="{StaticResource Hairline}"/>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <CheckBox x:Name="CloseToTray" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Сворачивать в трей при закрытии" Style="{StaticResource RowTitle}"/>
-                        <TextBlock Text="Крестик прячет окно в значок у часов, приложение продолжает работать. Выйти — правой кнопкой по значку → Выход." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <CheckBox x:Name="MinimizeToTray" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Сворачивать в трей вместо панели задач" Style="{StaticResource RowTitle}"/>
-                        <TextBlock Text="Кнопка «свернуть» убирает окно в трей, на панели задач оно не висит." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <CheckBox x:Name="Autostart" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Autostart_Click"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Запускать вместе с Windows" Style="{StaticResource RowTitle}"/>
-                        <TextBlock Text="Приложение стартует при входе в систему." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <CheckBox x:Name="StartMinimized" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="При автозапуске — сразу в трей" Style="{StaticResource RowTitle}"/>
-                        <TextBlock Text="Окно не появляется при входе в Windows, только значок в трее." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
+            <TextBlock Text="Трей и запуск" Style="{StaticResource Section}" Margin="0,26,0,12"/>
+            <ui:Plate Style="{StaticResource Slab}">
+                <StackPanel Margin="0,0,0,-1">
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <CheckBox x:Name="CloseToTray" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Сворачивать в трей при закрытии" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Text="Крестик прячет окно в значок у часов, приложение продолжает работать. Выйти: правой кнопкой по значку → Выход." Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <CheckBox x:Name="MinimizeToTray" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Сворачивать в трей вместо панели задач" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Text="Кнопка «свернуть» убирает окно в трей, на панели задач оно не висит." Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <CheckBox x:Name="Autostart" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Autostart_Click"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Запускать вместе с Windows" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Text="Приложение стартует при входе в систему." Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <CheckBox x:Name="StartMinimized" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="При автозапуске сразу в трей" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Text="Окно не появляется при входе в Windows, только значок в трее." Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </ui:Plate>
 
             <!-- Watermark -->
-            <TextBlock Text="B — ВАТЕРМАРКА" Style="{StaticResource Label}" Margin="0,36,0,6"/>
-            <Rectangle Style="{StaticResource Hairline}"/>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <CheckBox x:Name="OverlayOnStart" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Включать ватермарку при запуске" Style="{StaticResource RowTitle}"/>
-                        <TextBlock Text="Вместе с приложением сразу появляется плашка с FPS и температурами." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <CheckBox x:Name="OverlayAsAdmin" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Запускать ватермарку с правами администратора" Style="{StaticResource RowTitle}"/>
-                        <TextBlock Text="Нужно для счётчика FPS: Windows каждый раз спросит разрешение. Без этого FPS показывается как «—»." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
+            <TextBlock Text="Ватермарка" Style="{StaticResource Section}"/>
+            <ui:Plate Style="{StaticResource Slab}">
+                <StackPanel Margin="0,0,0,-1">
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <CheckBox x:Name="OverlayOnStart" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Включать ватермарку при запуске" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Text="Вместе с приложением сразу появляется плашка с FPS и температурами." Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <CheckBox x:Name="OverlayAsAdmin" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Запускать ватермарку с правами администратора" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Text="Нужно для счётчика FPS: Windows каждый раз спросит разрешение. Без этого FPS показывается как «—»." Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </ui:Plate>
 
             <!-- Before a match -->
-            <TextBlock Text="C — КНОПКА «ИГРАТЬ»" Style="{StaticResource Label}" Margin="0,36,0,6"/>
-            <Rectangle Style="{StaticResource Hairline}"/>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <CheckBox x:Name="PrepCloseApps" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Закрывать лишние программы" Style="{StaticResource RowTitle}"/>
-                        <TextBlock Text="Какие именно — настраивается правилами в разделе «Очистка фона»." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <CheckBox x:Name="PrepConfirm" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Спрашивать перед закрытием" Style="{StaticResource RowTitle}"/>
-                        <TextBlock Text="Показывать список программ. Без вопроса они закроются сразу, несохранённое может пропасть." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <CheckBox x:Name="PrepOverlay" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Включать ватермарку" Style="{StaticResource RowTitle}"/>
-                        <TextBlock Text="Заодно это включает запись замера FPS за игру." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
+            <TextBlock Text="Кнопка «Играть»" Style="{StaticResource Section}"/>
+            <ui:Plate Style="{StaticResource Slab}">
+                <StackPanel Margin="0,0,0,-1">
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <CheckBox x:Name="PrepCloseApps" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Закрывать лишние программы" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Text="Какие именно, настраивается правилами в разделе «Очистка фона»." Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <CheckBox x:Name="PrepConfirm" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Спрашивать перед закрытием" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Text="Показывать список программ. Без вопроса они закроются сразу, несохранённое может пропасть." Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <CheckBox x:Name="PrepOverlay" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Включать ватермарку" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Text="Заодно это включает запись замера FPS за игру." Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </ui:Plate>
 
             <!-- Updates -->
-            <TextBlock Text="D — ОБНОВЛЕНИЯ" Style="{StaticResource Label}" Margin="0,36,0,6"/>
-            <Rectangle Style="{StaticResource Hairline}"/>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <CheckBox x:Name="AutoUpdate" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Обновлять автоматически" Style="{StaticResource RowTitle}"/>
-                        <TextBlock Text="Раз в час проверяет релизы проекта на GitHub и скачивает новую версию в фоне. Ставит её, только когда закрыты CS2 и ватермарка, а окно свёрнуто, или при выходе." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Проверить сейчас" Click="CheckUpdates_Click" VerticalAlignment="Center"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock x:Name="UpdateVersion" Style="{StaticResource RowTitle}"/>
-                        <TextBlock x:Name="UpdateStatus" Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
+            <TextBlock Text="Обновления" Style="{StaticResource Section}"/>
+            <ui:Plate Style="{StaticResource Slab}">
+                <StackPanel Margin="0,0,0,-1">
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <CheckBox x:Name="AutoUpdate" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="Option_Click"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Обновлять автоматически" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Text="Раз в час проверяет релизы проекта на GitHub и скачивает новую версию в фоне. Ставит её, только когда закрыты CS2 и ватермарка, а окно свёрнуто, или при выходе." Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Проверить сейчас" Click="CheckUpdates_Click" VerticalAlignment="Center"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock x:Name="UpdateVersion" Style="{StaticResource RowTitle}"/>
+                                <TextBlock x:Name="UpdateStatus" Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </ui:Plate>
 
             <!-- Maps -->
-            <TextBlock Text="E — КАРТЫ" Style="{StaticResource Label}" Margin="0,36,0,6"/>
-            <Rectangle Style="{StaticResource Hairline}"/>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                        <RadioButton x:Name="LabelsRu" Style="{StaticResource Chip}" GroupName="labels" Content="RU" Click="Option_Click" Margin="0,0,6,0"/>
-                        <RadioButton x:Name="LabelsEn" Style="{StaticResource Chip}" GroupName="labels" Content="EN" Click="Option_Click" Margin="0"/>
-                    </StackPanel>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Язык подписей на радаре" Style="{StaticResource RowTitle}"/>
-                        <TextBlock Text="С каким языком открывается раздел «Карты»." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Очистить" Click="ClearMaps_Click" VerticalAlignment="Center"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Кеш радаров" Style="{StaticResource RowTitle}"/>
-                        <TextBlock x:Name="MapsCacheText" Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
+            <TextBlock Text="Карты" Style="{StaticResource Section}"/>
+            <ui:Plate Style="{StaticResource Slab}">
+                <StackPanel Margin="0,0,0,-1">
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                <RadioButton x:Name="LabelsRu" Style="{StaticResource Chip}" GroupName="labels" Content="RU" Click="Option_Click" Margin="0,0,6,0"/>
+                                <RadioButton x:Name="LabelsEn" Style="{StaticResource Chip}" GroupName="labels" Content="EN" Click="Option_Click" Margin="0"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Язык подписей на радаре" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Text="С каким языком открывается раздел «Карты»." Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Очистить" Click="ClearMaps_Click" VerticalAlignment="Center"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Кеш радаров" Style="{StaticResource RowTitle}"/>
+                                <TextBlock x:Name="MapsCacheText" Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </ui:Plate>
 
             <!-- Data -->
-            <TextBlock Text="F — ДАННЫЕ" Style="{StaticResource Label}" Margin="0,36,0,6"/>
-            <Rectangle Style="{StaticResource Hairline}"/>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Открыть папку" Click="OpenData_Click" VerticalAlignment="Center"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Папка настроек" Style="{StaticResource RowTitle}"/>
-                        <TextBlock x:Name="DataPathText" Style="{StaticResource Muted}" FontFamily="{StaticResource MonoFont}" FontSize="11.5" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-            <Border Style="{StaticResource Row}">
-                <DockPanel>
-                    <Button DockPanel.Dock="Right" Style="{StaticResource DangerButton}" Content="Сбросить" Click="Reset_Click" VerticalAlignment="Center"/>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Text="Сбросить всё" Style="{StaticResource RowTitle}"/>
-                        <TextBlock Text="Прицел, конфиг, ватермарка и эти настройки вернутся к значениям по умолчанию. Файлы игры не трогаются." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
+            <TextBlock Text="Данные" Style="{StaticResource Section}"/>
+            <ui:Plate Style="{StaticResource Slab}">
+                <StackPanel Margin="0,0,0,-1">
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Открыть папку" Click="OpenData_Click" VerticalAlignment="Center"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Папка настроек" Style="{StaticResource RowTitle}"/>
+                                <TextBlock x:Name="DataPathText" Style="{StaticResource Muted}" FontFamily="{StaticResource MonoFont}" FontSize="11.5" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Style="{StaticResource Row}">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Style="{StaticResource DangerButton}" Content="Сбросить" Click="Reset_Click" VerticalAlignment="Center"/>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Text="Сбросить всё" Style="{StaticResource RowTitle}"/>
+                                <TextBlock Text="Прицел, конфиг, ватермарка и эти настройки вернутся к значениям по умолчанию. Файлы игры не трогаются." Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </ui:Plate>
 
-            <TextBlock x:Name="ResultText" Style="{StaticResource Muted}" Foreground="{StaticResource OkBrush}" Margin="0,16,0,0"/>
+            <TextBlock x:Name="ResultText" Style="{StaticResource Muted}" Foreground="{StaticResource OkBrush}" Margin="0,14,0,0"/>
 
-            <StackPanel Orientation="Horizontal" Margin="0,40,0,0">
-                <Image Source="{StaticResource AppLogo}" Width="28" Height="28"/>
+            <StackPanel Orientation="Horizontal" Margin="0,26,0,0">
+                <Image Source="{StaticResource AppLogo}" Width="28" Height="28" RenderOptions.BitmapScalingMode="HighQuality"/>
                 <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
                     <TextBlock x:Name="VersionText" FontFamily="{StaticResource DisplayFont}" FontWeight="SemiBold" FontSize="14"/>
-                    <TextBlock Text="РАДАРЫ И ЗОНЫ — ИЗ ФАЙЛОВ CS2 · КОЛАУТЫ — ПО ГАЙДАМ CSDB.GG (ОКТЯБРЬ 2026)" Style="{StaticResource Label}" Margin="0,2,0,0"/>
+                    <TextBlock Text="Радары и зоны из файлов CS2, колауты по гайдам csdb.gg и cs2pulse (ноябрь 2026)." FontSize="11.5" Foreground="{StaticResource DimBrush}" Margin="0,1,0,0"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>

@@ -34,12 +34,50 @@ public static class MapRadar
     // Separate brushes of one place further apart than this (world units) get separate labels.
     const float ClusterDistance = 700;
 
+    // Part of the cache stamp: raising it re-extracts maps cached with older label positions.
+    const long CacheFormat = 6;
+
+    // Radar pixels of map a label wants around its spot.
+    const int LabelMargin = 8;
+
+    // Zones are rough boxes, so their middle can miss the spot players mean by that name. Radar position, 0–1.
+    static readonly Dictionary<string, Dictionary<string, (double X, double Y)>> LabelSpots = new()
+    {
+        ["mirage"] = new()
+        {
+            ["SnipersNest"] = (0.397, 0.448), ["Underpass"] = (0.497, 0.249),
+            ["CTSpawn"] = (0.302, 0.690), ["BombsiteA"] = (0.544, 0.764),
+        },
+        ["dust2"] = new() { ["BombsiteA"] = (0.795, 0.170), ["BombsiteB"] = (0.205, 0.130), ["CTSpawn"] = (0.580, 0.200), ["TSpawn"] = (0.385, 0.895), ["MidDoors"] = (0.452, 0.355), ["BDoors"] = (0.262, 0.228), ["TopofMid"] = (0.485, 0.630), ["LongDoors"] = (0.690, 0.600) },
+        ["inferno"] = new() { ["BombsiteA"] = (0.815, 0.683), ["BombsiteB"] = (0.486, 0.194), ["CTSpawn"] = (0.895, 0.349), ["TSpawn"] = (0.100, 0.669) },
+        ["nuke"] = new() { ["CTSpawn"] = (0.820, 0.465) },
+        ["ancient"] = new() { ["BombsiteA"] = (0.302, 0.260), ["BombsiteB"] = (0.758, 0.405), ["TSpawn"] = (0.484, 0.863), ["Outside"] = (0.264, 0.657) },
+        ["anubis"] = new() { ["CTSpawn"] = (0.404, 0.224), ["CTSideUpper"] = (0.449, 0.249), ["BombsiteB"] = (0.349, 0.507), ["BombsiteA"] = (0.752, 0.253) },
+        ["cache"] = new() { ["BombsiteA"] = (0.317, 0.265), ["BombsiteB"] = (0.346, 0.809) },
+        ["overpass"] = new() { ["BombsiteB"] = (0.695, 0.325) },
+        ["vertigo"] = new() { ["BombsiteB"] = (0.218, 0.236) },
+    };
+
+    /// <summary>One env_cs_place volume in world units.</summary>
+    record PlaceZone(string Name, Vector3 Min, Vector3 Max)
+    {
+        public Vector3 Center => (Min + Max) / 2;
+    }
+
+    /// <summary>Which radar pixels have map on them.</summary>
+    record RadarMask(int Width, int Height, bool[] Opaque);
+
     static readonly string CacheDir = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CS2Optimizer", "maps");
+
+    static readonly object LoadGate = new();
 
     static Dictionary<string, string>? _en, _ru;
 
     static string? GameCsgo => Cs2Paths.GameDir is { } d ? Path.Combine(d, "game", "csgo") : null;
+
+    /// <summary>Whether this map was already pulled out of the game, so loading it should be quick.</summary>
+    public static bool IsCached(string id) => File.Exists(Path.Combine(CacheDir, $"{id}.json"));
 
     /// <summary>Loads from cache, re-extracting when the map's files changed. Throws if CS2 isn't installed.</summary>
     public static RadarMap Load(string id)
@@ -47,9 +85,12 @@ public static class MapRadar
         var csgo = GameCsgo ?? throw new IOException("Не нашёл CS2 в библиотеках Steam.");
         var vpk = Path.Combine(csgo, "maps", $"de_{id}.vpk");
         if (!File.Exists(vpk)) throw new IOException($"В установленной игре нет карты de_{id}.");
-        long stamp = File.GetLastWriteTimeUtc(vpk).Ticks ^ File.GetLastWriteTimeUtc(Path.Combine(csgo, "pak01_dir.vpk")).Ticks;
+        long stamp = File.GetLastWriteTimeUtc(vpk).Ticks ^ File.GetLastWriteTimeUtc(Path.Combine(csgo, "pak01_dir.vpk")).Ticks ^ CacheFormat;
 
         var json = Path.Combine(CacheDir, $"{id}.json");
+        // The home screen and the maps page can ask for the same map at once, and both would write the same files.
+        lock (LoadGate)
+        {
         try
         {
             if (JsonSerializer.Deserialize<RadarMap>(File.ReadAllText(json)) is { } cached
@@ -62,6 +103,7 @@ public static class MapRadar
         Directory.CreateDirectory(CacheDir);
         File.WriteAllText(json, JsonSerializer.Serialize(map));
         return map;
+        }
     }
 
     static RadarMap Extract(string id, string csgo, string vpk, long stamp)
@@ -80,6 +122,7 @@ public static class MapRadar
 
         Directory.CreateDirectory(CacheDir);
         var layers = new Dictionary<string, string>();
+        var masks = new Dictionary<string, RadarMask>();
         double cl = 1, ct = 1, cr = 0, cb = 0;
         foreach (var layer in sections.Select(s => s.Name).DefaultIfEmpty("default"))
         {
@@ -93,6 +136,7 @@ public static class MapRadar
             var png = Path.Combine(CacheDir, $"{id}_{layer}.png");
             using (var file = File.Create(png)) bmp.Encode(file, SKEncodedImageFormat.Png, 100);
             layers[layer] = png;
+            masks[layer] = Mask(bmp);
 
             var (l, t, r, b) = OpaqueBounds(bmp);
             (cl, ct, cr, cb) = (Math.Min(cl, l), Math.Min(ct, t), Math.Max(cr, r), Math.Max(cb, b));
@@ -103,7 +147,7 @@ public static class MapRadar
         _ru ??= Localization(pak, "resource/csgo_russian.txt");
 
         // Place zones from every entity lump of the map.
-        var raw = new List<(string Name, Vector3 Origin)>();
+        var raw = new List<PlaceZone>();
         using (var map = new Package())
         {
             map.Read(vpk);
@@ -114,7 +158,7 @@ public static class MapRadar
                 res.Read(new MemoryStream(bytes));
                 foreach (var e in ((EntityLump)res.DataBlock!).GetEntities())
                     if (e.ContainsKey("classname") && e["classname"].ToString() == "env_cs_place" && e.ContainsKey("place_name"))
-                        raw.Add((e["place_name"].ToString()!, e.GetVector3Property("origin", default)));
+                        raw.Add(Zone(map, e));
             }
         }
 
@@ -122,14 +166,22 @@ public static class MapRadar
             sections.FirstOrDefault(s => z >= s.Min && z < s.Max && layers.ContainsKey(s.Name)).Name ?? layers.Keys.First();
 
         var places = new List<PlaceMark>();
-        foreach (var group in raw.GroupBy(r => (r.Name, Layer: LayerOf(r.Origin.Z))))
+        foreach (var group in raw.GroupBy(r => (r.Name, Layer: LayerOf(r.Center.Z))))
         {
-            foreach (var cluster in Cluster(group.Select(g => g.Origin).ToList()))
+            foreach (var cluster in Cluster(group.ToList()))
             {
-                var c = cluster.Aggregate(Vector3.Zero, (a, b) => a + b) / cluster.Count;
-                double x = (c.X - posX) / scale / 1024, y = (posY - c.Y) / scale / 1024;
-                if (x is < 0 or > 1 || y is < 0 or > 1) continue;
+                var boxes = cluster.Select(z => (
+                    L: (z.Min.X - posX) / scale / 1024, T: (posY - z.Max.Y) / scale / 1024,
+                    R: (z.Max.X - posX) / scale / 1024, B: (posY - z.Min.Y) / scale / 1024)).ToList();
                 var key = group.Key.Name;
+                // One label for the whole place: its separate brushes would only repeat the name next to it.
+                if (group.Key.Layer == "default" && LabelSpots.GetValueOrDefault(id)?.TryGetValue(key, out var spot) == true)
+                {
+                    places.Add(new PlaceMark(key, _en.GetValueOrDefault(key, Spaced(key)), _ru.GetValueOrDefault(key, Spaced(key)), spot.X, spot.Y, group.Key.Layer));
+                    break;
+                }
+                var (x, y) = LabelSpot(boxes, masks[group.Key.Layer]);
+                if (x is < 0 or > 1 || y is < 0 or > 1) continue;
                 places.Add(new PlaceMark(key, _en.GetValueOrDefault(key, Spaced(key)), _ru.GetValueOrDefault(key, Spaced(key)), x, y, group.Key.Layer));
             }
         }
@@ -156,13 +208,67 @@ public static class MapRadar
         return maxX < minX ? (0, 0, 1, 1) : ((double)minX / bmp.Width, (double)minY / bmp.Height, (double)maxX / bmp.Width, (double)maxY / bmp.Height);
     }
 
-    static List<List<Vector3>> Cluster(List<Vector3> points)
+    /// <summary>The volume an env_cs_place covers. Its origin alone is no use: it usually sits at a corner of the box.</summary>
+    static PlaceZone Zone(Package map, ValveResourceFormat.ResourceTypes.EntityLump.Entity e)
     {
-        var clusters = new List<List<Vector3>>();
-        foreach (var p in points)
+        var name = e["place_name"].ToString()!;
+        var origin = e.GetVector3Property("origin", default);
+        if (e.ContainsKey("model") && map.FindEntry(e["model"].ToString() + "_c") is { } entry)
         {
-            var near = clusters.FirstOrDefault(c => c.Any(q => Vector2.Distance(new(p.X, p.Y), new(q.X, q.Y)) < ClusterDistance));
-            if (near != null) near.Add(p); else clusters.Add([p]);
+            map.ReadEntry(entry, out var bytes);
+            using var res = new Resource();
+            res.Read(new MemoryStream(bytes));
+            var hulls = ((Model)res.DataBlock!).GetEmbeddedPhys()?.Parts.SelectMany(p => p.Shape.Hulls).ToList();
+            if (hulls is { Count: > 0 })
+                return new PlaceZone(name,
+                    origin + hulls.Select(h => h.Shape.Min).Aggregate(Vector3.Min),
+                    origin + hulls.Select(h => h.Shape.Max).Aggregate(Vector3.Max));
+        }
+        return new PlaceZone(name, origin, origin);
+    }
+
+    static RadarMask Mask(SKBitmap bmp)
+    {
+        var opaque = new bool[bmp.Width * bmp.Height];
+        for (int y = 0; y < bmp.Height; y++)
+            for (int x = 0; x < bmp.Width; x++)
+                opaque[y * bmp.Width + x] = bmp.GetPixel(x, y).Alpha >= 24;
+        return new RadarMask(bmp.Width, bmp.Height, opaque);
+    }
+
+    /// <summary>
+    /// The middle of the part of a zone that is actually map, since its box also covers walls and voids.
+    /// On an L-shaped area that middle can land off the map, so it then moves to the nearest map pixel.
+    /// </summary>
+    static (double X, double Y) LabelSpot(List<(double L, double T, double R, double B)> boxes, RadarMask mask)
+    {
+        var pixels = new List<(int X, int Y)>();
+        foreach (var (l, t, r, b) in boxes)
+        {
+            int x0 = Math.Max(0, (int)(l * mask.Width)), x1 = Math.Min(mask.Width - 1, (int)(r * mask.Width));
+            int y0 = Math.Max(0, (int)(t * mask.Height)), y1 = Math.Min(mask.Height - 1, (int)(b * mask.Height));
+            for (int y = y0; y <= y1; y++)
+                for (int x = x0; x <= x1; x++)
+                    if (mask.Opaque[y * mask.Width + x]) pixels.Add((x, y));
+        }
+        if (pixels.Count == 0)
+            return ((boxes[0].L + boxes[0].R) / 2, (boxes[0].T + boxes[0].B) / 2);
+
+        double cx = pixels.Average(p => p.X), cy = pixels.Average(p => p.Y);
+        // Prefer pixels with map all around them, so a label doesn't end up on a wall's edge.
+        bool Open(int x, int y) => x >= 0 && y >= 0 && x < mask.Width && y < mask.Height && mask.Opaque[y * mask.Width + x];
+        var inner = pixels.Where(p => Open(p.X - LabelMargin, p.Y) && Open(p.X + LabelMargin, p.Y) && Open(p.X, p.Y - LabelMargin) && Open(p.X, p.Y + LabelMargin)).ToList();
+        var (bx, by) = (inner.Count > 0 ? inner : pixels).MinBy(p => (p.X - cx) * (p.X - cx) + (p.Y - cy) * (p.Y - cy));
+        return ((double)bx / mask.Width, (double)by / mask.Height);
+    }
+
+    static List<List<PlaceZone>> Cluster(List<PlaceZone> zones)
+    {
+        var clusters = new List<List<PlaceZone>>();
+        foreach (var z in zones)
+        {
+            var near = clusters.FirstOrDefault(c => c.Any(q => Vector2.Distance(new(z.Center.X, z.Center.Y), new(q.Center.X, q.Center.Y)) < ClusterDistance));
+            if (near != null) near.Add(z); else clusters.Add([z]);
         }
         return clusters;
     }

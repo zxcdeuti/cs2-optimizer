@@ -10,14 +10,14 @@ namespace CS2Optimizer.Views;
 public partial class WatermarkBar : UserControl
 {
     static readonly FontFamily Hud = new("Bahnschrift");
-    static readonly FontFamily Mono = new("Cascadia Mono, Consolas");
     static readonly Brush Ink = Frozen("#F2F2F3");
-    static readonly Brush Dim = Frozen("#7A7A80");
-    static readonly Brush Warm = Frozen("#FFB547");
-    static readonly Brush Hot = Frozen("#FF5A4E");
+    static readonly Brush Dim = Frozen("#8E9BAD");
+    static readonly Brush Warm = Frozen("#FF9360");
+    static readonly Brush Hot = Frozen("#F2564B");
 
     OverlaySettings? _applied;
     TextBlock? _fps, _cpuLoad, _cpuTemp, _gpuLoad, _gpuTemp;
+    Brush _labelBrush = Dim;
 
     public WatermarkBar() => InitializeComponent();
 
@@ -42,9 +42,10 @@ public partial class WatermarkBar : UserControl
         double k = s.Scale / 100.0;
         Root.LayoutTransform = new ScaleTransform(k, k);
 
-        var bg = new SolidColorBrush(Color.FromArgb((byte)(s.Opacity * 255 / 100), 0x0C, 0x0C, 0x0D));
+        var bg = new SolidColorBrush(Color.FromArgb((byte)(s.Opacity * 255 / 100), 0x10, 0x15, 0x1D));
         Root.Effect = null;
-        Root.BorderBrush = Frozen("#2E2E31");
+        Root.BorderBrush = Frozen("#3D4A5D");
+        _labelBrush = s.Look == "Clear" ? Ink : Dim; // nothing behind the labels but the game
         switch (s.Look)
         {
             case "Clear":
@@ -74,7 +75,7 @@ public partial class WatermarkBar : UserControl
     UIElement BuildRow(OverlaySettings s, Brush accent)
     {
         var row = new StackPanel { Orientation = Orientation.Horizontal };
-        if (s.ShowLogo) row.Children.Add(Logo());
+        if (s.ShowLogo) row.Children.Add(Logo(s));
         if (s.Tag.Length > 0)
             row.Children.Add(new TextBlock
             {
@@ -87,7 +88,7 @@ public partial class WatermarkBar : UserControl
         {
             var group = new StackPanel { Orientation = Orientation.Horizontal };
             if (row.Children.Count > 0 && (row.Children[^1] is StackPanel))
-                group.Children.Add(new Rectangle { Width = 1, Height = 14, Margin = new Thickness(11, 0, 11, 0), Fill = Frozen("#3A3A3E") });
+                group.Children.Add(new Rectangle { Width = 1, Height = 14, Margin = new Thickness(11, 0, 11, 0), Fill = Frozen("#3D4A5D") });
             else if (row.Children.Count > 0)
                 group.Margin = new Thickness(11, 0, 0, 0);
             foreach (var p in parts) group.Children.Add(p);
@@ -136,7 +137,7 @@ public partial class WatermarkBar : UserControl
         if (s.ShowLogo || s.Tag.Length > 0)
         {
             var head = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 6) };
-            if (s.ShowLogo) head.Children.Add(Logo());
+            if (s.ShowLogo) head.Children.Add(Logo(s));
             if (s.Tag.Length > 0)
                 head.Children.Add(new TextBlock
                 {
@@ -153,11 +154,29 @@ public partial class WatermarkBar : UserControl
         return grid;
     }
 
-    static Image Logo() => new()
+    /// <summary>The user's own icon, cut to the chosen shape, or the app's mark.</summary>
+    static FrameworkElement Logo(OverlaySettings s)
     {
-        Source = (ImageSource)Application.Current.FindResource("AppLogoSmall"),
-        Width = 20, Height = 20, VerticalAlignment = VerticalAlignment.Center,
-    };
+        double size = Math.Clamp(s.LogoSize, 14, 40);
+        if (WatermarkLogo.Load(s.LogoFile) is not { } own)
+            return new Image { Source = (ImageSource)Application.Current.FindResource("AppLogoSmall"), Width = size, Height = size, VerticalAlignment = VerticalAlignment.Center };
+
+        if (s.LogoShape == "Original")
+        {
+            // Height is what fits the bar; a wide logo may run longer, up to a limit.
+            var image = new Image { Source = own, Height = size, MaxWidth = size * 4, Stretch = Stretch.Uniform, VerticalAlignment = VerticalAlignment.Center };
+            RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+            return image;
+        }
+
+        var picture = new ImageBrush(own) { Stretch = Stretch.UniformToFill };
+        RenderOptions.SetBitmapScalingMode(picture, BitmapScalingMode.HighQuality);
+        return new Border
+        {
+            Width = size, Height = size, Background = picture, VerticalAlignment = VerticalAlignment.Center,
+            CornerRadius = new CornerRadius(s.LogoShape == "Circle" ? size / 2 : size * 0.22),
+        };
+    }
 
     static TextBlock Value(double size, Brush brush, double minWidth, double left = 0)
     {
@@ -171,9 +190,9 @@ public partial class WatermarkBar : UserControl
         return t;
     }
 
-    static TextBlock Label(string text, Thickness margin) => new()
+    TextBlock Label(string text, Thickness margin) => new()
     {
-        Text = text, FontFamily = Mono, FontSize = 10, Foreground = Dim, VerticalAlignment = VerticalAlignment.Center, Margin = margin,
+        Text = text, FontFamily = Hud, FontSize = 10.5, Foreground = _labelBrush, VerticalAlignment = VerticalAlignment.Center, Margin = margin,
     };
 
     static void SetTemp(TextBlock? block, double? celsius)

@@ -42,10 +42,18 @@ public partial class MainWindow : Window
 
         var args = Environment.GetCommandLineArgs();
         int page = Array.IndexOf(args, "--page");
-        var start = page >= 0 && page + 1 < args.Length ? args[page + 1] : "system";
+        var start = page >= 0 && page + 1 < args.Length ? args[page + 1] : "home";
         var nav = LogicalTreeHelper.FindLogicalNode(this, "Nav_" + start) as RadioButton;
         if (nav != null) nav.IsChecked = true;
-        Navigate(nav != null ? start : "system");
+        Navigate(nav != null ? start : "home");
+
+#if DEBUG
+        if (TestScope.Arg("--test-size") is { } size)
+        {
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            (Width, Height) = (double.Parse(size.Split('x')[0]), double.Parse(size.Split('x')[1]));
+        }
+#endif
 
         // Test hook: open a map (and place) directly, e.g. --nav maps:nuke:Hut.
         int go = Array.IndexOf(args, "--nav");
@@ -54,13 +62,19 @@ public partial class MainWindow : Window
 
         int snap = Array.IndexOf(args, "--snapshot");
         if (snap >= 0 && snap + 1 < args.Length)
-            Loaded += async (_, _) => { await Task.Delay(3500); SaveSnapshot(args[snap + 1]); ExitApp(); };
+        {
+            int delay = 3500;
+#if DEBUG
+            if (TestScope.Arg("--test-delay") is { } ms) delay = int.Parse(ms);
+#endif
+            Loaded += async (_, _) => { await Task.Delay(delay); SaveSnapshot(args[snap + 1]); ExitApp(); };
+        }
 
         Loaded += async (_, _) =>
         {
             var cards = await Task.Run(SystemInfo.Hardware);
-            FooterGpu.Text = cards.FirstOrDefault(c => c.Label == "ВИДЕОКАРТА")?.Value.ToUpperInvariant() ?? "";
-            FooterDisplay.Text = cards.FirstOrDefault(c => c.Label == "ЭКРАН") is { } d ? $"{d.Value.Replace(" ", "")} · {d.Detail}".ToUpperInvariant() : "";
+            FooterGpu.Text = cards.FirstOrDefault(c => c.Label == "Видеокарта")?.Value ?? "";
+            FooterDisplay.Text = cards.FirstOrDefault(c => c.Label == "Экран") is { } d ? $"{d.Value}, {d.Detail}" : "";
         };
     }
 
@@ -161,7 +175,7 @@ public partial class MainWindow : Window
     {
         var version = Updater.Instance.ReadyVersion;
         UpdateNotice.Visibility = version != null ? Visibility.Visible : Visibility.Collapsed;
-        if (version != null) UpdateText.Text = $"ОБНОВЛЕНИЕ {version} ГОТОВО. УСТАНОВИТСЯ САМО, КОГДА НЕ БУДЕТ МЕШАТЬ";
+        if (version != null) UpdateText.Text = $"Обновление {version} готово. Установится само, когда не будет мешать.";
     }
 
     /// <summary>Never interrupts: only while the app is out of sight and neither the game nor the watermark runs.</summary>
@@ -234,6 +248,7 @@ public partial class MainWindow : Window
         {
             view = tag switch
             {
+                "home" => new HomeView(),
                 "graphics" => new GraphicsView(),
                 "crosshair" => new CrosshairView(),
                 "cleanup" => new CleanupView(),
@@ -258,8 +273,14 @@ public partial class MainWindow : Window
             new DoubleAnimation(6, 0, TimeSpan.FromMilliseconds(180)) { EasingFunction = ease });
     }
 
+    /// <summary>Opens a section the way its sidebar button does.</summary>
+    public void Go(string tag)
+    {
+        if (LogicalTreeHelper.FindLogicalNode(this, "Nav_" + tag) is RadioButton nav) nav.IsChecked = true;
+    }
+
     /// <summary>"maps:&lt;id&gt;[:place]" — switches to the maps page and opens that map.</summary>
-    void OpenMap(string target)
+    public void OpenMap(string target)
     {
         var parts = target.Split(':', 3);
         if (parts[0] != "maps") return;

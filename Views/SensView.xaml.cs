@@ -78,14 +78,14 @@ public partial class SensView : UserControl
             ScaleCanvas.Children.Add(label);
         }
 
-        var pro = new TextBlock { Text = "ПРО", Style = (Style)FindResource("Label"), Foreground = accent };
+        var pro = new TextBlock { Text = "Про", Style = (Style)FindResource("Label"), Foreground = accent };
         Canvas.SetLeft(pro, (X(ProLow) + X(ProHigh)) / 2 - 10);
         Canvas.SetTop(pro, -8);
         ScaleCanvas.Children.Add(pro);
 
         if (_edpi is { } edpi)
         {
-            var marker = new Rectangle { Width = 10, Height = 10, Fill = accent };
+            var marker = new Rectangle { Width = 10, Height = 10, Fill = accent, RenderTransformOrigin = new Point(0.5, 0.5), RenderTransform = new RotateTransform(45) };
             Canvas.SetLeft(marker, X(edpi) - 5);
             Canvas.SetTop(marker, 5);
             ScaleCanvas.Children.Add(marker);
@@ -121,7 +121,7 @@ public partial class SensView : UserControl
         var warn = (Brush)FindResource("WarnBrush");
 
         bool accel = MouseSettings.AccelerationEnabled;
-        AccelStatus.Text = accel ? "!" : "OK";
+        AccelStatus.Text = accel ? "\uE7BA" : "\uE73E";
         AccelStatus.Foreground = accel ? warn : accent;
         AccelDetail.Text = accel
             ? "Включена: курсор ускоряется от скорости движения. В самой CS2 мышь идёт напрямую (raw input), но в меню и на рабочем столе мышечная память сбивается."
@@ -130,7 +130,7 @@ public partial class SensView : UserControl
 
         int speed = MouseSettings.PointerSpeed;
         bool neutral = speed == 10;
-        SpeedStatus.Text = neutral ? "OK" : "i";
+        SpeedStatus.Text = neutral ? "\uE73E" : "\uE946";
         SpeedStatus.Foreground = neutral ? accent : (Brush)FindResource("MutedBrush");
         SpeedDetail.Text = neutral
             ? "10 из 20 — без пропуска пикселей, 1:1 с DPI мыши."

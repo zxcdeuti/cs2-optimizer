@@ -1,8 +1,9 @@
 <UserControl x:Class="CS2Optimizer.Views.CleanupView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:CS2Optimizer.Views"
              Loaded="OnLoaded">
-    <Grid Margin="48,6,48,28">
+    <Grid Margin="44,0,44,24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -11,15 +12,13 @@
         </Grid.RowDefinitions>
 
         <StackPanel>
-            <TextBlock Text="04 / ОЧИСТКА ФОНА" Style="{StaticResource Eyebrow}"/>
-            <TextBlock Text="Фоновые программы" Style="{StaticResource H1}"/>
-            <TextBlock Text="Что сейчас занимает память. Отмеченные программы будут закрыты — сохрани в них всё нужное. Правило запоминает твой выбор для следующих очисток и кнопки «Играть»."
-                       Style="{StaticResource Lead}"/>
-            <Rectangle Style="{StaticResource PageRule}" Margin="0,28,0,24"/>
+            <TextBlock Text="ОЧИСТКА ФОНА" Style="{StaticResource H1}"/>
+            <TextBlock Text="Что сейчас занимает память. Отмеченные программы будут закрыты, сохрани в них всё нужное. Правило запоминает твой выбор для следующих очисток и кнопки «Играть»."
+                       Style="{StaticResource Lead}" Margin="0,6,0,20"/>
         </StackPanel>
 
         <!-- Totals -->
-        <Grid Grid.Row="1" Margin="0,0,0,24">
+        <Grid Grid.Row="1" Margin="0,0,0,18">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -28,68 +27,70 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel>
-                <TextBlock Text="ОЗУ ЗАНЯТО" Style="{StaticResource Label}"/>
-                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                    <TextBlock x:Name="UsedMem" Text="—" Style="{StaticResource Num}" FontSize="34"/>
-                    <TextBlock x:Name="TotalMem" Text="" Style="{StaticResource Num}" FontSize="16" Foreground="{StaticResource DimBrush}"
-                               VerticalAlignment="Bottom" Margin="6,0,0,5"/>
+                <TextBlock Text="Память занята" Style="{StaticResource ColHead}" HorizontalAlignment="Left"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                    <TextBlock x:Name="UsedMem" Text="—" Style="{StaticResource BigNum}" FontSize="40" LineHeight="42"/>
+                    <TextBlock x:Name="TotalMem" Style="{StaticResource Num}" FontSize="16" Foreground="{StaticResource DimBrush}"
+                               VerticalAlignment="Bottom" Margin="6,0,0,4"/>
                 </StackPanel>
             </StackPanel>
-            <StackPanel Grid.Column="1" Margin="56,0,0,0">
-                <TextBlock Text="ВЫБРАНО" Style="{StaticResource Label}"/>
-                <TextBlock x:Name="SelCount" Text="0" Style="{StaticResource Num}" FontSize="34" Margin="0,6,0,0"/>
+            <StackPanel Grid.Column="1" Margin="52,0,0,0">
+                <TextBlock Text="Выбрано" Style="{StaticResource ColHead}" HorizontalAlignment="Left"/>
+                <TextBlock x:Name="SelCount" Text="0" Style="{StaticResource BigNum}" FontSize="40" LineHeight="42" Margin="0,2,0,0"/>
             </StackPanel>
-            <StackPanel Grid.Column="2" Margin="56,0,0,0">
-                <TextBlock Text="ОСВОБОДИТСЯ" Style="{StaticResource Label}"/>
-                <TextBlock x:Name="SelMem" Text="0 МБ" Style="{StaticResource Num}" FontSize="34" Foreground="{StaticResource AccentBrush}" Margin="0,6,0,0"/>
+            <StackPanel Grid.Column="2" Margin="52,0,0,0">
+                <TextBlock Text="Освободится" Style="{StaticResource ColHead}" HorizontalAlignment="Left"/>
+                <TextBlock x:Name="SelMem" Text="0 МБ" Style="{StaticResource BigNum}" FontSize="40" LineHeight="42" Foreground="{StaticResource AccentBrush}" Margin="0,2,0,0"/>
             </StackPanel>
             <Button Grid.Column="4" Style="{StaticResource SecondaryButton}" Click="Refresh_Click" VerticalAlignment="Bottom" Content="Обновить"/>
         </Grid>
 
-        <DockPanel Grid.Row="2">
-            <Grid DockPanel.Dock="Top" Margin="38,0,14,8">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="150"/>
-                    <ColumnDefinition Width="130"/>
-                    <ColumnDefinition Width="80"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="ПРОГРАММА" Style="{StaticResource Label}"/>
-                <TextBlock Grid.Column="1" Text="ПРАВИЛО" Style="{StaticResource Label}"/>
-                <TextBlock Grid.Column="2" Text="ДОЛЯ" Style="{StaticResource Label}"/>
-                <TextBlock Grid.Column="3" Text="ПАМЯТЬ" Style="{StaticResource Label}" HorizontalAlignment="Right"/>
-            </Grid>
-            <Rectangle DockPanel.Dock="Top" Style="{StaticResource Hairline}"/>
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <ItemsControl x:Name="ProcList">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <CheckBox Style="{StaticResource RowCheck}" IsChecked="{Binding IsSelected}" Click="Selection_Click">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/><ColumnDefinition Width="150"/><ColumnDefinition Width="130"/><ColumnDefinition Width="80"/></Grid.ColumnDefinitions>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Display}" FontSize="14" FontWeight="SemiBold"/>
-                                        <TextBlock Text="{Binding Sub}" Style="{StaticResource Label}" Margin="12,1,0,0"/>
-                                        <TextBlock Text="РЕКОМЕНДУЕМ ЗАКРЫТЬ" Style="{StaticResource Label}" Foreground="{StaticResource WarnBrush}"
-                                                   Visibility="{Binding TagVisibility}" Margin="14,1,0,0"/>
-                                    </StackPanel>
-                                    <Button Grid.Column="1" Style="{StaticResource LinkButton}" Content="{Binding RuleLabel}" Foreground="{Binding RuleBrush}" Click="Rule_Click" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="Что делать с этой программой при очистке и подготовке к игре. Нажми, чтобы сменить."/>
-                                    <Grid Grid.Column="2" Height="4" VerticalAlignment="Center" Margin="0,0,20,0">
-                                        <Rectangle Fill="{StaticResource LineBrush}"/>
-                                        <Rectangle Fill="{StaticResource MutedBrush}" HorizontalAlignment="Left" Width="{Binding BarWidth}"/>
+        <ui:Plate Grid.Row="2" Style="{StaticResource Slab}" Padding="0" ClipContent="True">
+            <DockPanel>
+                <Grid DockPanel.Dock="Top" Margin="54,12,26,9">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="80"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Программа" Style="{StaticResource ColHead}"/>
+                    <TextBlock Grid.Column="1" Text="Правило" Style="{StaticResource ColHead}"/>
+                    <TextBlock Grid.Column="2" Text="Доля" Style="{StaticResource ColHead}"/>
+                    <TextBlock Grid.Column="3" Text="Память" Style="{StaticResource ColHead}" HorizontalAlignment="Right"/>
+                </Grid>
+                <Rectangle DockPanel.Dock="Top" Style="{StaticResource Hairline}"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="ProcList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Style="{StaticResource RowCheck}" IsChecked="{Binding IsSelected}" Click="Selection_Click">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/><ColumnDefinition Width="150"/><ColumnDefinition Width="130"/><ColumnDefinition Width="80"/></Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Display}" Style="{StaticResource RowTitle}"/>
+                                            <TextBlock Text="{Binding Sub}" FontSize="12" Foreground="{StaticResource DimBrush}" VerticalAlignment="Center" Margin="10,1,0,0"/>
+                                            <TextBlock Text="Лучше закрыть" Style="{StaticResource Label}" Foreground="{StaticResource WarnBrush}"
+                                                       Visibility="{Binding TagVisibility}" Margin="12,1,0,0"/>
+                                        </StackPanel>
+                                        <Button Grid.Column="1" Style="{StaticResource LinkButton}" Content="{Binding RuleLabel}" Foreground="{Binding RuleBrush}" Click="Rule_Click" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="Что делать с этой программой при очистке и подготовке к игре. Нажми, чтобы сменить."/>
+                                        <Grid Grid.Column="2" Height="4" VerticalAlignment="Center" Margin="0,0,20,0">
+                                            <Rectangle Fill="{StaticResource LineBrush}"/>
+                                            <Rectangle Fill="{StaticResource MutedBrush}" HorizontalAlignment="Left" Width="{Binding BarWidth}"/>
+                                        </Grid>
+                                        <TextBlock Grid.Column="3" Text="{Binding Memory}" Style="{StaticResource Num}" FontSize="15"
+                                                   HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                     </Grid>
-                                    <TextBlock Grid.Column="3" Text="{Binding Memory}" Style="{StaticResource Num}" FontSize="15"
-                                               HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                </Grid>
-                            </CheckBox>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-        </DockPanel>
+                                </CheckBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </ui:Plate>
 
-        <DockPanel Grid.Row="3" Margin="0,18,0,0">
+        <DockPanel Grid.Row="3" Margin="0,16,0,0">
             <Button x:Name="CloseBtn" DockPanel.Dock="Right" Style="{StaticResource DangerButton}" Click="Close_Click" Content="Закрыть выбранные"/>
             <TextBlock x:Name="ResultText" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,16,0" FontSize="13"
                        Foreground="{StaticResource OkBrush}"/>

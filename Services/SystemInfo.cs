@@ -18,7 +18,7 @@ public class Check
     public string? FixLabel { get; init; }
     public Func<string>? Fix { get; init; }
 
-    public string Status => Ok ? "OK" : "!";
+    public string Status => Ok ? "\uE73E" : "\uE7BA";
     public Brush StatusBrush => (Brush)Application.Current.Resources[Ok ? "OkBrush" : "WarnBrush"];
     public Visibility FixVisibility => !Ok && Fix != null ? Visibility.Visible : Visibility.Collapsed;
 }
@@ -60,37 +60,37 @@ public static class SystemInfo
 
         var cpu = Query("SELECT Name, NumberOfCores, NumberOfLogicalProcessors FROM Win32_Processor").FirstOrDefault();
         cards.Add(cpu == null
-            ? new("", "ПРОЦЕССОР", "Не удалось определить", "")
-            : new("", "ПРОЦЕССОР", Clean(S(cpu, "Name")),
+            ? new("", "Процессор", "Не удалось определить", "")
+            : new("", "Процессор", Clean(S(cpu, "Name")),
                 $"{S(cpu, "NumberOfCores")} ядер · {S(cpu, "NumberOfLogicalProcessors")} потоков"));
 
         var gpus = Query("SELECT Name, DriverVersion, CurrentHorizontalResolution, CurrentVerticalResolution, CurrentRefreshRate FROM Win32_VideoController");
         var main = gpus.FirstOrDefault(g => !IsIntegrated(S(g, "Name"))) ?? gpus.FirstOrDefault();
         var others = gpus.Where(g => g != main).Select(g => S(g, "Name").Replace("(R)", "")).ToList();
         cards.Add(main == null
-            ? new("", "ВИДЕОКАРТА", "Не удалось определить", "")
-            : new("", "ВИДЕОКАРТА", S(main, "Name"),
+            ? new("", "Видеокарта", "Не удалось определить", "")
+            : new("", "Видеокарта", S(main, "Name"),
                 $"Драйвер {S(main, "DriverVersion")}" + (others.Count > 0 ? $"\n+ {string.Join(", ", others)}" : "")));
 
         var sticks = Query("SELECT Capacity, ConfiguredClockSpeed, Speed FROM Win32_PhysicalMemory");
         long total = sticks.Sum(s => L(s, "Capacity"));
         var mhz = sticks.Select(s => L(s, "ConfiguredClockSpeed") is > 0 and var c ? c : L(s, "Speed")).DefaultIfEmpty(0).Min();
         var sizes = string.Join(" + ", sticks.Select(s => $"{L(s, "Capacity") >> 30}"));
-        cards.Add(new("", "ОПЕРАТИВНАЯ ПАМЯТЬ", $"{total >> 30} ГБ",
+        cards.Add(new("", "Оперативная память", $"{total >> 30} ГБ",
             sticks.Count == 0 ? "" : $"{sizes} ГБ · {mhz} МГц · {(sticks.Count >= 2 ? "двухканал" : "одноканал")}"));
 
         var display = gpus.FirstOrDefault(g => L(g, "CurrentHorizontalResolution") > 0);
         cards.Add(display == null
-            ? new("", "ЭКРАН", "—", "")
-            : new("", "ЭКРАН", $"{L(display, "CurrentHorizontalResolution")} × {L(display, "CurrentVerticalResolution")}",
+            ? new("", "Экран", "—", "")
+            : new("", "Экран", $"{L(display, "CurrentHorizontalResolution")} × {L(display, "CurrentVerticalResolution")}",
                 $"{L(display, "CurrentRefreshRate")} Гц"));
 
         var disks = Query("SELECT FriendlyName, MediaType, Size FROM MSFT_PhysicalDisk", @"root\Microsoft\Windows\Storage");
-        cards.Add(new("", "НАКОПИТЕЛИ", disks.Count switch { 0 => "—", 1 => "1 диск", < 5 => $"{disks.Count} диска", _ => $"{disks.Count} дисков" },
+        cards.Add(new("", "Накопители", disks.Count switch { 0 => "—", 1 => "1 диск", < 5 => $"{disks.Count} диска", _ => $"{disks.Count} дисков" },
             string.Join("\n", disks.Select(d => $"{(L(d, "MediaType") == 3 ? "HDD" : L(d, "MediaType") == 4 ? "SSD" : "Диск")} · {L(d, "Size") / 1_000_000_000} ГБ"))));
 
         var os = Query("SELECT Caption, Version FROM Win32_OperatingSystem").FirstOrDefault();
-        cards.Add(new("", "СИСТЕМА",
+        cards.Add(new("", "Система",
             os == null ? "Windows" : Regex.Replace(S(os, "Caption"), "^(Майкрософт|Microsoft) ", ""),
             os == null ? "" : $"Сборка {S(os, "Version")}"));
 

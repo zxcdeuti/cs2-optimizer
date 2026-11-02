@@ -23,7 +23,7 @@ public partial class SettingsView : UserControl
         (LabelsRu.IsChecked, LabelsEn.IsChecked) = (s.MapLabelsRu, !s.MapLabelsRu);
         Autostart.IsChecked = Services.Autostart.Enabled;
         DataPathText.Text = AppSettings.DataDir;
-        VersionText.Text = $"CS2/OPT {typeof(App).Assembly.GetName().Version?.ToString(2)}";
+        VersionText.Text = $"CS2 Optimizer {typeof(App).Assembly.GetName().Version?.ToString(2)}";
         (PrepCloseApps.IsChecked, PrepConfirm.IsChecked, PrepOverlay.IsChecked) = (s.PrepCloseApps, s.PrepConfirm, s.PrepOverlay);
         AutoUpdate.IsChecked = s.AutoUpdate;
         Updater.Instance.Changed -= ShowUpdateStatus;
@@ -114,6 +114,7 @@ public partial class SettingsView : UserControl
         if (OverlayControl.IsRunning) OverlayControl.Stop();
         foreach (var file in Directory.Exists(AppSettings.DataDir) ? Directory.GetFiles(AppSettings.DataDir, "*.json") : [])
             File.Delete(file);
+        WatermarkLogo.RemoveExcept(null);
         Services.Autostart.Set(false, false);
         AppSettings.Reset();
         OnLoaded(this, e);

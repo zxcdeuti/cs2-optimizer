@@ -26,17 +26,17 @@ public partial class ConfigView : UserControl
     {
         var entry = _state[item.Cvar];
         var grid = new Grid();
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(44) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(34) });
         grid.ColumnDefinitions.Add(new ColumnDefinition());
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(280) });
 
-        var include = new CheckBox { Style = (Style)FindResource("Tick"), IsChecked = entry.Included, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(0, 2, 0, 0) };
+        var include = new CheckBox { Style = (Style)FindResource("Tick"), IsChecked = entry.Included, VerticalAlignment = VerticalAlignment.Top, HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 2, 0, 0) };
         grid.Children.Add(include);
 
         var text = new StackPanel { Margin = new Thickness(0, 0, 24, 0) };
-        text.Children.Add(new TextBlock { Text = item.Title, FontSize = 14.5, FontWeight = FontWeights.SemiBold });
+        text.Children.Add(new TextBlock { Text = item.Title, Style = (Style)FindResource("RowTitle") });
         text.Children.Add(new TextBlock { Text = item.Hint, Style = (Style)FindResource("Muted"), Margin = new Thickness(0, 4, 0, 0) });
-        text.Children.Add(new TextBlock { Text = item.Cvar, Style = (Style)FindResource("Label"), Margin = new Thickness(0, 6, 0, 0) });
+        text.Children.Add(new TextBlock { Text = item.Cvar, Style = (Style)FindResource("Cmd"), HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 6, 0, 0) });
         Grid.SetColumn(text, 1);
         grid.Children.Add(text);
 

@@ -25,9 +25,9 @@ public static class Callouts
         new("vertigo", "Vertigo", "Вертиго"),
     ];
 
-    public static readonly string[] Zones = ["T-СТОРОНА", "A", "МИД", "B", "CT-СТОРОНА"];
+    public static readonly string[] Zones = ["T-сторона", "A", "Мид", "B", "CT-сторона"];
 
-    const string T = "T-СТОРОНА", A = "A", M = "МИД", B = "B", CT = "CT-СТОРОНА";
+    const string T = "T-сторона", A = "A", M = "Мид", B = "B", CT = "CT-сторона";
 
     public static readonly Callout[] All =
     [
@@ -88,6 +88,8 @@ public static class Callouts
         new("dust2", T, "Box", "Коробка", "Закрытая локация между аутсайдом и лонгом, используется для буста."),
         new("dust2", M, "Right Side Mid", "Ноль", "Скрытая позиция в углу для наблюдения за перетяжкой сил."),
         new("dust2", CT, "Mushrooms", "Грибы", "Мелкий каменный выступ у брошенной машины."),
+        new("dust2", M, "Close Mid Doors", "Клоуз мид", "Угол сразу за дверьми мида со стороны CT."),
+        new("dust2", B, "B Boxes", "Ящики B", "Ящики между КТ-мидом и дверьми B."),
 
         // ── Mirage ──
         new("mirage", T, "T Spawn", "Т-спавн", "Респаун атаки с путями на A, мид и B."),
@@ -110,7 +112,7 @@ public static class Callouts
         new("mirage", A, "Sandwich", "Сэндвич / Между", "Щель между дефолтными ящиками и файрбоксом."),
         new("mirage", A, "Firebox", "Файрбокс", "Одиночный ящик между сэндвичем и лестницей."),
         new("mirage", A, "Triple Box", "Трипл", "Тройной ящик в глубине A — частая позиция AWP."),
-        new("mirage", A, "Stairs", "Лестница / Стейрс", "Лестница в глубине A у спуска из паласа."),
+        new("mirage", A, "Stairs", "Лестница / Стейрс", "Лестница на A со стороны джангла и коннектора."),
         new("mirage", A, "Jungle", "Джангл", "Тенистая комната между коннектором и A."),
         new("mirage", A, "Ticket Booth", "Тикет / Будка", "Будка на A со стороны CT."),
         new("mirage", A, "Ninja", "Ниндзя", "Укромное место перед файрбоксом, которое часто забывают проверить."),
@@ -161,7 +163,7 @@ public static class Callouts
         new("inferno", A, "A Site", "Плент A", "Площадь закладки под балконом."),
         new("inferno", A, "Pit", "Яма / Пит", "Углубление у края A — классическое место CT."),
         new("inferno", A, "Dosia", "Дося", "Самый дальний угол ямы."),
-        new("inferno", A, "Graveyard", "Кладбище / Тюрьма", "Огороженный участок за A у библиотеки."),
+        new("inferno", A, "Graveyard", "Тюрьма", "Огороженный участок за A у библиотеки."),
         new("inferno", A, "Balcony", "Балкон", "Балкон апартов над A, с него спрыгивают на плент."),
         new("inferno", A, "Library", "Библиотека / Либа", "Комната с книжными полками с видом на лонг A."),
         new("inferno", A, "Truck", "Сено / Грузовик / Трак", "Грузовик на шорте A, буст на балкон."),
@@ -201,6 +203,11 @@ public static class Callouts
         new("inferno", A, "Small Pit", "Малые пески", "Угловая позиция у выхода из библиотеки."),
         new("inferno", A, "Under Balcony", "Под балконом", "Тесное укрытие прямо под балконом."),
         new("inferno", A, "Ninja", "Ниндзя", "Угол слева от поворота на лонг."),
+        new("inferno", A, "Cemetery", "Кладбище", "Участок за каменной стеной в глубине ямы."),
+        new("inferno", A, "Long Corner", "Угол лонга", "Угол на лонге A напротив библиотеки."),
+        new("inferno", A, "CT Apartments", "КТ-апарты", "Комнаты над вторым мидом со стороны защиты."),
+        new("inferno", A, "Close Apartments", "Клоуз апарты", "Конец коридора КТ-апартов с выходом на балкон над ямой."),
+        new("inferno", M, "Stairs", "Лестница", "Лестница из второго мида в КТ-апарты."),
 
         // ── Nuke ──
         new("nuke", T, "T Spawn", "Т-спавн", "Респаун атаки: в лобби или на улицу."),
@@ -246,6 +253,10 @@ public static class Callouts
         new("nuke", B, "Toxic", "Токсик / Дефолт B", "Место установки C4 на B."),
         new("nuke", B, "Ninja", "Ниндзя", "Позиция в левом углу B."),
         new("nuke", B, "Iron", "Железо", "Зона между синглом и ниндзя."),
+        new("nuke", A, "Bridge", "Мост", "Проход от стропил к мустангу."),
+        new("nuke", B, "Stack", "Стак", "Ящики в углу рампы у тёрнпайка."),
+        new("nuke", B, "Boost", "Буст", "Ящики у входа из контрола на рампу."),
+        new("nuke", CT, "CT Box", "КТ-бокс", "Ящик у КТ-спавна рядом с лестницей к хевену."),
 
         // ── Ancient ──
         new("ancient", T, "T Spawn", "Т-спавн", "Респаун атаки на юге карты."),
@@ -291,6 +302,7 @@ public static class Callouts
         new("ancient", A, "A Boost", "Буст A", "Возвышенность, с которой контролируют лонг."),
         new("ancient", B, "Cave", "Кейв", "Просторная комната перед входом на B."),
         new("ancient", B, "Nest", "Нычка", "Небольшое укрытие в углу плента B."),
+        new("ancient", T, "T Ramp", "Т-рампа", "Подъём слева от Т-спавна к сплиту."),
 
         // ── Anubis ──
         new("anubis", T, "T Spawn", "Т-спавн", "Респаун атаки на юге."),
@@ -335,6 +347,11 @@ public static class Callouts
         new("anubis", B, "Plat", "Платформа", "Задняя часть плента B с колонной и бетонными блоками."),
         new("anubis", B, "Ropz", "Ропз", "Выступ у правой стены мейна B с видом на коннектор."),
         new("anubis", CT, "Temple", "Темпл", "Проход между двумя стенами к B, им возвращаются и с мида."),
+        new("anubis", M, "Boat", "Лодка", "Затопленная камера с лодкой у канала."),
+        new("anubis", M, "Wood", "Дерево", "Угол с деревянным полом рядом с лодкой."),
+        new("anubis", M, "Arches", "Арки", "Двойные арки в канале в сторону A."),
+        new("anubis", A, "Back Site A", "Бэк A", "Задняя часть A со стороны CT."),
+        new("anubis", M, "E Box", "Электрощит", "Ниша внутри здания между центром и B."),
 
         // ── Cache ──
         new("cache", T, "T Spawn", "Т-спавн", "Респаун атаки на западе."),
@@ -366,7 +383,7 @@ public static class Callouts
         new("cache", B, "B Main", "Мейн B", "Вход на B между холлами и чекерсом."),
         new("cache", B, "B Halls", "Холлы B", "Коридор от Т-спавна к мейну B."),
         new("cache", B, "Sun Room", "Санрум", "Комната с солнцем на стене и окном на B."),
-        new("cache", B, "Toxic", "Токсик", "Угол с жёлтыми бочками в санруме."),
+        new("cache", B, "Toxic", "Токсик", "Угол с жёлтыми бочками за санрумом."),
         new("cache", B, "Checkers", "Вентрум / Чекерс / Шахматка", "Комната с клетчатым полом между вентами и мейном B."),
         new("cache", B, "B Site", "Плент B", "Точка B на возвышении, видна с хевена."),
         new("cache", B, "Heaven", "Девятка / Хевен", "Деревянная площадка над B."),
@@ -383,6 +400,23 @@ public static class Callouts
         new("cache", CT, "Truck", "Грузовик", "Грузовик CT между электрикой и холлами."),
         new("cache", CT, "Elektro", "Щитки / Электро", "Бетонные блоки у A со стороны CT на месте старого электрощита."),
         new("cache", CT, "Bus Stop", "Остановка", "Автобусная остановка у КТ-спавна."),
+        new("cache", T, "T Boxes", "Т-ящики", "Ящики между Т-спавном и холлами B."),
+        new("cache", A, "A Default", "Дефолт A", "Обычное место закладки в центре A."),
+        new("cache", A, "A Boost", "Буст A", "Буст у входа на A между скрипом и мейном."),
+        new("cache", A, "A Halls", "Холлы A", "Коридоры, ведущие к скрипу и мейну."),
+        new("cache", A, "Outside A", "Снаружи A", "Открытая земля между Т-траком и мейном A."),
+        new("cache", A, "Ladder", "Лестница", "Лестница с хайвея на балкон."),
+        new("cache", M, "A Stairs", "Лестница A", "Ступени из мида к мейну A."),
+        new("cache", B, "B Main Boxes", "Мейн-ящики", "Ящики у входа в чекерс."),
+        new("cache", B, "Back Checkers", "Бэк чекерса", "Место за ящиками в углу чекерса."),
+        new("cache", B, "Flash Window", "Окно санрума", "Окно в санруме, через него кидают гранаты на B."),
+        new("cache", B, "B Ramp", "Рампа B", "Подъём к точке закладки B."),
+        new("cache", B, "Pit", "Яма", "Углубление у рампы B."),
+        new("cache", B, "B Default", "Дефолт B", "Обычное место закладки на B."),
+        new("cache", B, "Close Left", "Клоуз", "Левый угол при заходе на B из хелла."),
+        new("cache", B, "Rafters", "Стропила", "Металлический проход на высоте, ведущий на хевен."),
+        new("cache", CT, "Back Hall", "Задний коридор", "Защитный коридор между коннектором и подходом к хевену."),
+        new("cache", CT, "CT Lane", "КТ-лейн", "Дорожка от КТ-спавна к коннектору и B."),
 
         // ── Overpass ──
         new("overpass", T, "T Spawn", "Т-спавн", "Респаун атаки внизу карты."),
@@ -393,7 +427,7 @@ public static class Callouts
         new("overpass", A, "A Long", "Лонг A / Длина", "Дорожка через парк к A под AWP CT."),
         new("overpass", A, "A Site", "Плент A", "Точка A над парком."),
         new("overpass", A, "Bank", "Банк", "Здание банка в глубине A."),
-        new("overpass", A, "Truck", "Инкассатор / Машина / Грузовик", "Грузовик на A для укрытия и буста."),
+        new("overpass", A, "Truck", "Машина / Грузовик", "Грузовик на A для укрытия и буста."),
         new("overpass", A, "Flowers", "Цветы / Клумба", "Клумба у туалетов перед A."),
         new("overpass", A, "Upper Park", "Верхний парк", "Западная часть парка."),
         new("overpass", M, "Fountain", "Фонтан", "Площадь перед мидом со стороны A."),
@@ -420,6 +454,12 @@ public static class Callouts
         new("overpass", A, "Long Toilets", "Душевая", "Зона у лонга и буста, ведёт к туалетам."),
         new("overpass", B, "Graffiti", "Граффити / Тупик", "Проход к заболоченной позиции на песках."),
         new("overpass", B, "Sewers", "Канализация", "Выход из длинного тоннеля при удержании B."),
+        new("overpass", A, "Van", "Инкассатор", "Фургон с деньгами у банка."),
+        new("overpass", A, "Bins", "Контейнеры", "Контейнеры в глубине A в сторону снайперки и склада."),
+        new("overpass", A, "A Default", "Дефолт A", "Обычное место закладки между зелёными ящиками."),
+        new("overpass", A, "Long Boost", "Буст на лонге", "Клумба и скамейка на лонге с обзором A."),
+        new("overpass", M, "A Short", "Шорт A", "Лестница на A там, где мид выходит к точке."),
+        new("overpass", B, "Boost", "Буст", "Место, откуда запрыгивают из воды на площадку B."),
 
         // ── Train (вне Active Duty с января 2026) ──
         new("train", T, "T Spawn", "Т-спавн", "Респаун атаки на западе."),
@@ -433,7 +473,7 @@ public static class Callouts
         new("train", T, "Popdog", "Попдог", "Комната с лестницей у двора A — фирменный фланг Train."),
         new("train", A, "A Main", "Мейн A", "Главный вход атаки во двор A."),
         new("train", A, "A Site", "Плент A", "Точка закладки среди вагонов."),
-        new("train", A, "Ivy", "Зелень / Айви / Плющ", "Длинный проход во двор A со стороны CT."),
+        new("train", A, "Ivy", "Зелень / Айви / Плющ", "Длинный проход с Т-стороны во двор A."),
         new("train", A, "E Box", "Электрощит / Е-бокс / Транс / Элек", "Щит между попдогом и бомб-вагоном — место AWP."),
         new("train", A, "Heaven", "Хевен / Над зигой", "Площадка над двором A, подъём по лестнице."),
         new("train", A, "Old Bomb", "Старая бомба", "Вагон в проходе от CT к A."),
@@ -444,7 +484,7 @@ public static class Callouts
         new("train", A, "Sandwich", "Сэндвич / Старая / Между", "Щель между синим и зелёным вагонами."),
         new("train", A, "Olof", "Олоф / 100", "Карман у синего вагона напротив мейна."),
         new("train", A, "Hell", "Хелл / Под окна", "Ниша у зелёного вагона напротив айви."),
-        new("train", A, "Dumpster", "Мусор / Мусорка", "Контейнер у выхода с айви."),
+        new("train", A, "Dumpster", "Мусор / Мусорка", "Контейнер между Т-спавном и длиной."),
         new("train", M, "Z Connector", "Зига / Коннектор / Z", "Проход между дворами A и B."),
         new("train", M, "Catwalk", "Кэтвок / Верхний парапет", "Мостик после верха B вдоль двора."),
         new("train", M, "Ladder", "Лестница", "Спуск с верха B во двор."),
@@ -466,6 +506,7 @@ public static class Callouts
         new("train", A, "Cubby", "Кабби", "Лестница, ведущая к позиции над зигой."),
         new("train", A, "Camera", "Камера", "Небольшое здание между путями A2 и A3."),
         new("train", B, "Kitchen", "Нубка", "Компактная комната на пути атаки к туалету."),
+        new("train", A, "Chinese Doors", "Китайские двери", "Узкие двери между айви и двором A."),
         // ── Vertigo ──
         new("vertigo", T, "T Spawn", "Т-спавн", "Респаун атаки на нижнем этаже."),
         new("vertigo", T, "T Stairs", "Т-лестница", "Лестница со спавна в Т-мид."),
@@ -483,7 +524,7 @@ public static class Callouts
         new("vertigo", M, "Top Mid", "Топ-мид", "CT-часть мида у лифта и коннектора."),
         new("vertigo", M, "Connector", "Коннектор", "Коридор из мида к B и КТ-спавну."),
         new("vertigo", B, "B Stairs", "Лестница B", "Лестница с Т-спавна на B."),
-        new("vertigo", B, "B Site", "Плент B", "Нижняя точка у КТ-спавна."),
+        new("vertigo", B, "B Site", "Плент B", "Точка B рядом с КТ-спавном."),
         new("vertigo", B, "Electric Box", "Электрощит", "Большой ящик между КТ-спавном и B."),
         new("vertigo", B, "Back B", "Бэк B", "Угол B у кэтвока — позиция якоря."),
         new("vertigo", CT, "CT Spawn", "КТ-спавн", "Респаун защиты у B."),
@@ -498,6 +539,15 @@ public static class Callouts
         new("vertigo", B, "Catwalk", "Подиум", "Крайняя часть плента B, похожая на отвесный выступ."),
         new("vertigo", B, "Elbow", "Колено", "Дальний уступ за высокими балками."),
         new("vertigo", B, "Cooler", "Радиатор", "Большой радиатор ближе к девятке."),
+        new("vertigo", A, "Lane", "Лейн", "Узкий проход от лесов к шорту A."),
+        new("vertigo", A, "A Short", "Шорт A", "Отрезок между лейном, лесами и плентом A."),
+        new("vertigo", A, "Fence", "Забор", "Возвышение у рампы напротив плента."),
+        new("vertigo", A, "Double", "Дабл", "Два оранжевых ящика у плента A."),
+        new("vertigo", T, "Big Box", "Большой ящик", "Деревянный ящик между рампой A и мостом."),
+        new("vertigo", T, "Save Spot", "Сейв", "Угол между мостом и андерпассом."),
+        new("vertigo", T, "Sheets", "Листы", "Ниша у рампы A со стройматериалами."),
+        new("vertigo", M, "T Mid", "Т-мид", "Т-сторона мида, вход с Т-лестницы и генератора."),
+        new("vertigo", M, "Headshot", "Хедшот", "Угол в голову между топ-мидом и коннектором."),
     ];
 
     static string Norm(string s) => s.ToLowerInvariant().Replace('ё', 'е');
@@ -521,9 +571,9 @@ public static class Callouts
     {
         ["mirage"] = new() { ["window"] = "snipersnest", ["palace"] = "palaceinterior", ["aramp"] = "tramp", ["market"] = "shop", ["ladderroom"] = "ladder" },
         ["inferno"] = new() { ["bottommid"] = "lowermid", ["tapartments"] = "apartments" },
-        ["nuke"] = new() { ["window"] = "observation", ["lockers"] = "lockerroom", ["radio"] = "vending", ["troof"] = "roof" },
-        ["ancient"] = new() { ["tlower"] = "tsidelower", ["tupper"] = "tsideupper" },
-        ["anubis"] = new() { ["doubledoors"] = "middoors", ["mainhall"] = "main", ["backsite"] = "backofb", ["upper"] = "tsideupper", ["bconnector"] = "connector", ["palace"] = "palaceinterior", ["blong"] = "outsidelong" },
+        ["nuke"] = new() { ["main"] = "mini", ["window"] = "observation", ["lockers"] = "lockerroom", ["radio"] = "vending", ["troof"] = "roof" },
+        ["ancient"] = new() { ["donut"] = "sidehall", ["tlower"] = "tsidelower", ["tupper"] = "tsideupper" },
+        ["anubis"] = new() { ["water"] = "canal", ["doubledoors"] = "middoors", ["mainhall"] = "main", ["backsite"] = "backofb", ["upper"] = "tsideupper", ["bconnector"] = "connector", ["palace"] = "palaceinterior", ["blong"] = "outsidelong" },
         ["cache"] = new() { ["elektro"] = "electricalbox", ["along"] = "longa" },
         ["train"] = new() { ["zconnector"] = "connector", ["ebox"] = "electricalbox", ["tupper"] = "tsideupper" },
         ["vertigo"] = new() { ["backb"] = "backofb", ["scaffold"] = "scaffolding", ["backdoors"] = "backdoor" },
@@ -553,28 +603,28 @@ public static class Callouts
         },
         ["inferno"] = new()
         {
-            ["Apartments"] = "Апарты", ["LowerMid"] = "Низ мида", ["Quad"] = "Тройка", ["SecondMid"] = "Второй мид",
+            ["Apartments"] = "Апарты", ["LowerMid"] = "Низ мида", ["SecondMid"] = "Второй мид", ["Upstairs"] = "Гостиная",
         },
         ["nuke"] = new()
         {
-            ["Catwalk"] = "Кэтвок", ["Control"] = "Контрол", ["Decon"] = "Декон", ["Hell"] = "Хелл", ["Lobby"] = "Лобби", ["Observation"] = "Аквариум",
+            ["Catwalk"] = "Кэтвок", ["Mini"] = "Мейн", ["Control"] = "Контрол", ["Decon"] = "Декон", ["Hell"] = "Хелл", ["Lobby"] = "Лобби", ["Observation"] = "Аквариум",
             ["Secret"] = "Сикрет", ["Silo"] = "Скала", ["Vending"] = "Автоматы", ["Vents"] = "Винты",
         },
         ["ancient"] = new()
         {
-            ["MainHall"] = "Мейн A", ["Outside"] = "Аутсайд", ["TSideLower"] = "Т-низ", ["TSideUpper"] = "Т-верх",
+            ["MainHall"] = "Мейн A", ["SideHall"] = "Пончик", ["House"] = "Снайперка", ["Outside"] = "Аутсайд", ["TSideLower"] = "Т-низ", ["TSideUpper"] = "Т-верх",
         },
         ["anubis"] = new()
         {
-            ["BackofB"] = "Бэк B", ["Main"] = "Мейн", ["MidDoors"] = "Двери", ["OutsideLong"] = "Лонг", ["PalaceInterior"] = "Палас",
+            ["Street"] = "Аллея", ["Alley"] = "Улица", ["BackofB"] = "Бэк B", ["Main"] = "Мейн", ["MidDoors"] = "Двери", ["OutsideLong"] = "Лонг", ["PalaceInterior"] = "Палас",
             ["TSideUpper"] = "Верх", ["TStairs"] = "Ступеньки", ["TunnelStairs"] = "Лестница в туннеле", ["Walkway"] = "Коннектор A",
         },
         ["cache"] = new()
         {
-            ["ABoost"] = "Буст A", ["AHalls"] = "Холлы A", ["AMain"] = "Мейн A", ["BHalls"] = "Холлы B", ["BMain"] = "Мейн B", ["Boost"] = "Буст",
+            ["Corner"] = "НБК", ["CTLane"] = "КТ-лейн", ["ABoost"] = "Буст A", ["AHalls"] = "Холлы A", ["AMain"] = "Мейн A", ["BHalls"] = "Холлы B", ["BMain"] = "Мейн B", ["Boost"] = "Буст",
             ["Catwalk"] = "Кэтвок", ["Checkers"] = "Вентрум", ["Cubby"] = "Труба", ["ElectricalBox"] = "Щитки", ["Headshot"] = "Хедшот",
             ["Highway"] = "Хайвей", ["LongA"] = "Лонг A", ["MidRoof"] = "Крыша мида", ["Quad"] = "Тройка", ["SunRoom"] = "Санрум",
-            ["Toxic"] = "Токсик", ["TTruck"] = "Т-трак", ["TYard"] = "Т-двор", ["Vents"] = "Вент",
+            ["TTruck"] = "Т-трак", ["TYard"] = "Т-двор", ["Vents"] = "Вент",
         },
         ["overpass"] = new()
         {
@@ -588,7 +638,7 @@ public static class Callouts
         },
         ["vertigo"] = new()
         {
-            ["APlatform"] = "Платформа A", ["ARamp"] = "Рампа A", ["BackofA"] = "Бэк A", ["BackofB"] = "Бэк B", ["BPlatform"] = "Платформа B",
+            ["APlatform"] = "Платформа A", ["ARamp"] = "Рампа A", ["BackDoor"] = "Дальние двери", ["BackofA"] = "Бэк A", ["BackofB"] = "Бэк B", ["BPlatform"] = "Платформа B",
             ["Elevator"] = "Лифт", ["Side"] = "Сайд", ["TCorridorUp"] = "Т-коридор",
         },
     };
@@ -609,10 +659,26 @@ public static class Callouts
         return k.Length > 4 && k.EndsWith('s') ? k[..^1] : k;
     }
 
+    // The game's zone has this name but lies elsewhere than the callout players mean by it (Inferno's Quad zone is by the A short, not on B).
+    static readonly HashSet<(string Map, string Place)> UnrelatedPlaces = [("inferno", "Quad"), ("inferno", "Kitchen"), ("anubis", "Water"), ("cache", "Toxic")];
+
+    // Zones players know under another callout: on Anubis the game's "Street" is the lane everyone calls Alley, and the other way round.
+    static readonly Dictionary<(string Map, string Place), string> PlaceCallouts = new()
+    {
+        [("anubis", "Street")] = "Alley", [("anubis", "Alley")] = "Street",
+        [("ancient", "House")] = "Snipers Nest",
+        [("inferno", "Upstairs")] = "Living Room",
+        [("cache", "Corner")] = "NBK",
+    };
+
     /// <summary>The community callout that matches a Valve place zone, if the handbook has one.</summary>
     public static Callout? ForPlace(string mapId, string placeKey) =>
-        All.FirstOrDefault(c => c.Map == mapId && PlaceKey(mapId, c.En) == PlaceKey(mapId, placeKey));
+        PlaceCallouts.TryGetValue((mapId, placeKey), out var named) ? All.FirstOrDefault(c => c.Map == mapId && c.En == named)
+        : UnrelatedPlaces.Contains((mapId, placeKey)) ? null
+        : All.FirstOrDefault(c => c.Map == mapId && PlaceKey(mapId, c.En) == PlaceKey(mapId, placeKey));
 
     /// <summary>Whether a callout points at this place zone.</summary>
-    public static bool SamePlace(Callout c, string placeKey) => PlaceKey(c.Map, c.En) == PlaceKey(c.Map, placeKey);
+    public static bool SamePlace(Callout c, string placeKey) =>
+        PlaceCallouts.TryGetValue((c.Map, placeKey), out var named) ? c.En == named
+        : !UnrelatedPlaces.Contains((c.Map, placeKey)) && PlaceKey(c.Map, c.En) == PlaceKey(c.Map, placeKey);
 }

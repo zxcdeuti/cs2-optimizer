@@ -1,0 +1,18 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Section icons on a 20×20 grid, drawn as a 1.5 px stroke. -->
+    <Geometry x:Key="IconHome">M3,9.5 L10,3 L17,9.5 M5,8 V17 H15 V8 M8.5,17 V12 H11.5 V17</Geometry>
+    <Geometry x:Key="IconSystem">M6,6 H14 V14 H6 Z M8,3 V6 M12,3 V6 M8,14 V17 M12,14 V17 M3,8 H6 M3,12 H6 M14,8 H17 M14,12 H17</Geometry>
+    <Geometry x:Key="IconGraphics">M2.75,4 H17.25 V14 H2.75 Z M7,17 H13 M10,14 V17 M6,11 L9,7.5 L11,9.5 L12.5,8 L14.5,11</Geometry>
+    <Geometry x:Key="IconLaunch">M2.75,4 H17.25 V16 H2.75 Z M6,8 L9,10.5 L6,13 M11,13 H14.5</Geometry>
+    <Geometry x:Key="IconCleanup">M16.5,3 L10.5,9 M7.5,7.5 L12.5,12.5 L9,17.25 H3 V11.5 Z M6,17 V14 M9,15 L9.5,12.5</Geometry>
+    <Geometry x:Key="IconCrosshair">M10,2.5 V7.5 M10,12.5 V17.5 M2.5,10 H7.5 M12.5,10 H17.5</Geometry>
+    <Geometry x:Key="IconMouse">M10,2.75 C7,2.75 5.25,4.75 5.25,7.5 V12.5 C5.25,15.25 7,17.25 10,17.25 C13,17.25 14.75,15.25 14.75,12.5 V7.5 C14.75,4.75 13,2.75 10,2.75 Z M10,5.5 V8.5</Geometry>
+    <Geometry x:Key="IconConfig">M4.75,2.75 H12 L15.25,6 V17.25 H4.75 Z M12,2.75 V6 H15.25 M7.5,10 H12.5 M7.5,13.5 H12.5</Geometry>
+    <Geometry x:Key="IconMaps">M2.75,5 L7.75,3 L12.25,5 L17.25,3 V15 L12.25,17 L7.75,15 L2.75,17 Z M7.75,3 V15 M12.25,5 V17</Geometry>
+    <Geometry x:Key="IconWatermark">M2.75,4 H17.25 V16 H2.75 Z M5.25,6.5 H11 V9.5 H5.25 Z</Geometry>
+    <Geometry x:Key="IconSessions">M3,2.75 V17 H17.25 M6,13 L9,9 L12,11 L16.25,5</Geometry>
+    <Geometry x:Key="IconSettings">M2.75,6 H9 M13,6 H17.25 M2.75,14 H7 M11,14 H17.25 M9,3.75 H13 V8.25 H9 Z M7,11.75 H11 V16.25 H7 Z</Geometry>
+    <Geometry x:Key="IconPlay">M6,3 L16,10 L6,17 Z</Geometry>
+    <Geometry x:Key="IconChevron">M8,5 L13,10 L8,15</Geometry>
+</ResourceDictionary>

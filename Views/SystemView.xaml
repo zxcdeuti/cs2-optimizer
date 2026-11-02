@@ -1,15 +1,14 @@
 <UserControl x:Class="CS2Optimizer.Views.SystemView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:CS2Optimizer.Views"
              Loaded="OnLoaded">
     <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="48,6,48,48">
-            <TextBlock Text="01 / СИСТЕМА" Style="{StaticResource Eyebrow}"/>
-            <TextBlock Text="Состояние системы" Style="{StaticResource H1}"/>
+        <StackPanel Margin="44,0,44,44" MaxWidth="1160" HorizontalAlignment="Stretch">
+            <TextBlock Text="СИСТЕМА" Style="{StaticResource H1}"/>
             <TextBlock Text="Железо и настройки Windows, от которых зависит FPS и задержка в CS2." Style="{StaticResource Lead}"/>
-            <Rectangle Style="{StaticResource PageRule}"/>
 
-            <!-- Score -->
+            <!-- Score: one tick per check -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -17,61 +16,69 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-                    <TextBlock x:Name="ScoreOk" Text="–" Style="{StaticResource Num}" FontSize="76" FontWeight="Light" LineHeight="70"
-                               LineStackingStrategy="BlockLineHeight"/>
-                    <TextBlock x:Name="ScoreTotal" Text="/–" Style="{StaticResource Num}" FontSize="32" FontWeight="Light"
-                               Foreground="{StaticResource DimBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4"/>
+                    <TextBlock x:Name="ScoreOk" Text="–" Style="{StaticResource BigNum}" FontSize="72" LineHeight="66"/>
+                    <TextBlock x:Name="ScoreTotal" Text="/–" Style="{StaticResource BigNum}" FontSize="32" LineHeight="32" FontWeight="Normal"
+                               Foreground="{StaticResource DimBrush}" VerticalAlignment="Bottom" Margin="4,0,0,2"/>
                 </StackPanel>
-                <StackPanel Grid.Column="1" Margin="28,0,0,6" VerticalAlignment="Bottom">
-                    <TextBlock Text="ПРОВЕРОК ПРОЙДЕНО" Style="{StaticResource Label}"/>
-                    <TextBlock x:Name="ScoreTitle" Text="Сканирую…" Style="{StaticResource H2}" Margin="0,6,0,0"/>
-                    <TextBlock x:Name="ScoreSub" Text="" Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                <StackPanel Grid.Column="1" Margin="24,0,24,2" VerticalAlignment="Bottom">
+                    <TextBlock x:Name="ScoreTitle" Text="Сканирую…" Style="{StaticResource H2}"/>
+                    <TextBlock x:Name="ScoreSub" Style="{StaticResource Muted}" Margin="0,2,0,8"/>
+                    <ItemsControl x:Name="ScoreTicks">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Rectangle Height="6" Fill="{Binding StatusBrush}" Margin="0,0,4,0" ToolTip="{Binding Title}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
-                <Button Grid.Column="2" Style="{StaticResource SecondaryButton}" Click="Refresh_Click" VerticalAlignment="Bottom" Margin="0,0,0,6"
-                        Content="Проверить снова"/>
+                <Button Grid.Column="2" Style="{StaticResource SecondaryButton}" Click="Refresh_Click" VerticalAlignment="Bottom" Content="Проверить снова"/>
             </Grid>
 
             <!-- Checks -->
-            <TextBlock Text="ПРОВЕРКИ WINDOWS" Style="{StaticResource Label}" Margin="0,44,0,6"/>
-            <Rectangle Style="{StaticResource Hairline}"/>
-            <ItemsControl x:Name="ChecksList">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,16">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="44"/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Status}" FontFamily="{StaticResource MonoFont}" FontSize="11" FontWeight="Bold"
-                                           Foreground="{Binding StatusBrush}" VerticalAlignment="Top" Margin="0,3,0,0"/>
-                                <StackPanel Grid.Column="1" Margin="0,0,24,0">
-                                    <TextBlock Text="{Binding Title}" FontSize="14.5" FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding Detail}" Style="{StaticResource Muted}" Margin="0,4,0,0" MaxWidth="640" HorizontalAlignment="Left"/>
-                                </StackPanel>
-                                <Button Grid.Column="2" Content="{Binding FixLabel}" Visibility="{Binding FixVisibility}"
-                                        Style="{StaticResource PrimaryButton}" Padding="16,8" Click="Fix_Click" VerticalAlignment="Center"/>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <TextBlock Text="Проверки Windows" Style="{StaticResource Section}"/>
+            <ui:Plate Style="{StaticResource Slab}">
+                <ItemsControl x:Name="ChecksList" Margin="0,0,0,-1">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource Row}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="34"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Status}" Style="{StaticResource StatusIcon}" Foreground="{Binding StatusBrush}"/>
+                                    <StackPanel Grid.Column="1" Margin="0,0,24,0">
+                                        <TextBlock Text="{Binding Title}" Style="{StaticResource RowTitle}"/>
+                                        <TextBlock Text="{Binding Detail}" Style="{StaticResource Muted}" Margin="0,3,0,0" MaxWidth="660" HorizontalAlignment="Left"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="2" Content="{Binding FixLabel}" Visibility="{Binding FixVisibility}"
+                                            Style="{StaticResource PrimaryButton}" Padding="16,8" Click="Fix_Click" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ui:Plate>
 
             <!-- Undo journal -->
-            <TextBlock Text="ЧТО ИЗМЕНИЛО ПРИЛОЖЕНИЕ" Style="{StaticResource Label}" Margin="0,44,0,6"/>
-            <Rectangle Style="{StaticResource Hairline}"/>
-            <TextBlock x:Name="ChangesEmpty" Style="{StaticResource Muted}" Margin="0,14,0,0"
+            <TextBlock Text="Что изменило приложение" Style="{StaticResource Section}"/>
+            <TextBlock x:Name="ChangesEmpty" Style="{StaticResource Muted}" MaxWidth="660" HorizontalAlignment="Left"
                        Text="Пока ничего. Всё, что ты исправишь кнопками выше или в разделе «Сенса и мышь», появится здесь, и его можно будет вернуть."/>
             <ItemsControl x:Name="ChangesList">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,12">
+                        <Border Style="{StaticResource Row}" Padding="0,12">
                             <DockPanel>
                                 <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Вернуть как было" Click="Undo_Click" VerticalAlignment="Center"/>
                                 <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                                    <TextBlock Text="{Binding When, StringFormat={}{0:dd.MM.yyyy HH:mm}}" Style="{StaticResource Label}" Margin="0,4,0,0"/>
+                                    <TextBlock Text="{Binding Title}" Style="{StaticResource RowTitle}"/>
+                                    <TextBlock Text="{Binding When, StringFormat={}{0:dd.MM.yyyy HH:mm}}" Style="{StaticResource Muted}" Margin="0,3,0,0"/>
                                 </StackPanel>
                             </DockPanel>
                         </Border>
@@ -80,29 +87,20 @@
             </ItemsControl>
 
             <!-- Hardware spec sheet -->
-            <TextBlock Text="ЖЕЛЕЗО" Style="{StaticResource Label}" Margin="0,44,0,6"/>
-            <Rectangle Style="{StaticResource Hairline}"/>
+            <TextBlock Text="Железо" Style="{StaticResource Section}"/>
             <ItemsControl x:Name="HwList">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Columns="2"/>
+                        <UniformGrid Columns="3"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,16,24,16">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="150"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Label}" Style="{StaticResource Label}" VerticalAlignment="Top" Margin="0,3,0,0"/>
-                                <StackPanel Grid.Column="1">
-                                    <TextBlock Text="{Binding Value}" FontFamily="{StaticResource DisplayFont}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                                    <TextBlock Text="{Binding Detail}" Style="{StaticResource Muted}" Margin="0,3,0,0"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
+                        <StackPanel Margin="0,0,28,22">
+                            <TextBlock Text="{Binding Label}" Style="{StaticResource ColHead}" HorizontalAlignment="Left"/>
+                            <TextBlock Text="{Binding Value}" FontFamily="{StaticResource DisplayFont}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                            <TextBlock Text="{Binding Detail}" Style="{StaticResource Muted}" Margin="0,2,0,0"/>
+                        </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

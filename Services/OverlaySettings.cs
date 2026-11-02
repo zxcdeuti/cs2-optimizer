@@ -12,6 +12,9 @@ namespace CS2Optimizer.Services;
 /// <param name="Opacity">Background opacity, percent.</param>
 /// <param name="Tag">Free text next to the logo, e.g. a nickname.</param>
 /// <param name="Offset">Distance from the screen edge, px.</param>
+/// <param name="LogoFile">The user's own icon, a file name inside the app's logos folder. Empty: the app's mark.</param>
+/// <param name="LogoShape">How the own icon is cut: Rounded, Circle or Original.</param>
+/// <param name="LogoSize">Logo height, px before Scale.</param>
 public record OverlaySettings(
     bool Enabled = false,
     string Corner = "TopLeft",
@@ -20,13 +23,16 @@ public record OverlaySettings(
     bool ShowGpu = true,
     string Look = "Panel",
     string Layout = "Row",
-    string Accent = "#D4FF3F",
+    string Accent = "#F5B335",
     int Scale = 100,
     int Opacity = 88,
     bool ShowLogo = true,
     bool ShowLabels = true,
     string Tag = "",
-    int Offset = 14)
+    int Offset = 14,
+    string LogoFile = "",
+    string LogoShape = "Rounded",
+    int LogoSize = 20)
 {
     public static readonly string FilePath = Path.Combine(TestScope.AppData, "CS2Optimizer", "overlay.json");
 

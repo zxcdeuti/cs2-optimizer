@@ -26,11 +26,16 @@ public partial class WatermarkView : UserControl
         Check(LookHost, _settings.Look);
         Check(LayoutHost, _settings.Layout);
         Check(CornerHost, _settings.Corner);
+        Check(LogoShapeHost, _settings.LogoShape);
         (FpsToggle.IsChecked, CpuToggle.IsChecked, GpuToggle.IsChecked) = (_settings.ShowFps, _settings.ShowCpu, _settings.ShowGpu);
         (LogoToggle.IsChecked, LabelsToggle.IsChecked) = (_settings.ShowLogo, _settings.ShowLabels);
         TagBox.Text = _settings.Tag;
-        (ScaleSlider.Value, OpacitySlider.Value, OffsetSlider.Value) = (_settings.Scale, _settings.Opacity, _settings.Offset);
+        (ScaleSlider.Value, OpacitySlider.Value, OffsetSlider.Value, LogoSizeSlider.Value) = (_settings.Scale, _settings.Opacity, _settings.Offset, _settings.LogoSize);
+        ShowLogoChoice();
         _ready = true;
+#if DEBUG
+        if (TestScope.Arg("--test-logo") is { } testLogo) UseLogo(testLogo);
+#endif
 
         // The preview has no FPS of its own: the main window isn't a game.
         _telemetry ??= new Telemetry(withFps: false);
@@ -123,8 +128,8 @@ public partial class WatermarkView : UserControl
 
         bool running = OverlayWindow.IsRunning();
         bool stuck = running && RecorderLog.IsStuck();
-        StatusDot.Fill = (Brush)FindResource(stuck ? "WarnBrush" : running ? "AccentBrush" : "DimBrush");
-        StatusText.Text = stuck ? "НЕ ОТВЕЧАЕТ" : running ? "РАБОТАЕТ" : "ВЫКЛЮЧЕНА";
+        StatusDot.Fill = (Brush)FindResource(stuck ? "WarnBrush" : running ? "OkBrush" : "DimBrush");
+        StatusText.Text = stuck ? "Не отвечает" : running ? "Работает" : "Выключена";
         StatusSub.Text = running ? "Плашка на экране поверх всех окон." : "Включи — плашка появится поверх всех окон и игр.";
         ToggleText.Text = running ? "Выключить" : "Включить";
         ToggleBtn.Style = (Style)FindResource(running ? "SecondaryButton" : "PrimaryButton");
@@ -145,6 +150,7 @@ public partial class WatermarkView : UserControl
         {
             "look" => _settings with { Look = tag },
             "layout" => _settings with { Layout = tag },
+            "logoShape" => _settings with { LogoShape = tag },
             _ => _settings with { Corner = tag },
         });
     }
@@ -159,7 +165,61 @@ public partial class WatermarkView : UserControl
     {
         // Sliders fire while InitializeComponent is still creating their siblings.
         if (!_ready) return;
-        Save(_settings with { Scale = (int)ScaleSlider.Value, Opacity = (int)OpacitySlider.Value, Offset = (int)OffsetSlider.Value });
+        Save(_settings with { Scale = (int)ScaleSlider.Value, Opacity = (int)OpacitySlider.Value, Offset = (int)OffsetSlider.Value, LogoSize = (int)LogoSizeSlider.Value });
+    }
+
+    // ── own icon ───────────────────────────────────────────────────────────────
+
+    void ShowLogoChoice()
+    {
+        var own = WatermarkLogo.Load(_settings.LogoFile);
+        LogoThumb.Source = own ?? (ImageSource)FindResource("AppLogo");
+        LogoResetBtn.Visibility = own != null ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    void LogoPick_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog { Title = "Картинка для ватермарки", Filter = WatermarkLogo.FileFilter };
+        if (dialog.ShowDialog(Window.GetWindow(this)) == true) UseLogo(dialog.FileName);
+    }
+
+    void Logo_DragOver(object sender, DragEventArgs e)
+    {
+        e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
+        e.Handled = true;
+    }
+
+    void Logo_Drop(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetData(DataFormats.FileDrop) is string[] { Length: > 0 } files) UseLogo(files[0]);
+    }
+
+    void UseLogo(string path)
+    {
+        try
+        {
+            var name = WatermarkLogo.Import(path);
+            Save(_settings with { LogoFile = name, ShowLogo = true });
+            LogoToggle.IsChecked = true;
+            WatermarkLogo.RemoveExcept(name);
+            ShowLogoChoice();
+            LogoStatus.Foreground = (Brush)FindResource("OkBrush");
+            LogoStatus.Text = $"Готово: {Path.GetFileName(path)}. Плашка обновится за секунду.";
+        }
+        catch (Exception ex) when (ex is InvalidDataException or IOException or UnauthorizedAccessException)
+        {
+            LogoStatus.Foreground = (Brush)FindResource("WarnBrush");
+            LogoStatus.Text = ex.Message;
+        }
+    }
+
+    void LogoReset_Click(object sender, RoutedEventArgs e)
+    {
+        Save(_settings with { LogoFile = "" });
+        WatermarkLogo.RemoveExcept(null);
+        ShowLogoChoice();
+        LogoStatus.Foreground = (Brush)FindResource("MutedBrush");
+        LogoStatus.Text = "Снова стандартный значок приложения.";
     }
 
     void Accent_Click(object sender, RoutedEventArgs e)

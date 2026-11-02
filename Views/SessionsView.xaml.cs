@@ -30,15 +30,15 @@ public partial class SessionsView : UserControl
         var state = RecorderLog.Read();
         // A crashed or killed watermark leaves its last state behind, so the running check comes first.
         var (title, detail, dot) = !OverlayControl.IsRunning
-            ? ("ЗАПИСЬ НЕ ИДЁТ", "Ватермарка выключена. Включи её или нажми «Играть», замер запишется сам.", "DimBrush")
+            ? ("Запись не идёт", "Ватермарка выключена. Включи её или нажми «Играть», замер запишется сам.", "DimBrush")
             : RecorderLog.IsStuck()
-            ? ("ВАТЕРМАРКА НЕ ОТВЕЧАЕТ", "Запись не идёт. Выключи ватермарку и включи снова в её разделе.", "WarnBrush")
+            ? ("Ватермарка не отвечает", "Запись не идёт. Выключи ватермарку и включи снова в её разделе.", "WarnBrush")
             : state?.State switch
             {
-                "recording" => ("ИДЁТ ЗАПИСЬ", state.Detail, "AccentBrush"),
-                "no-fps" => ("ЗАПИСЬ НЕ ИДЁТ", state.Detail + " Выключи ватермарку и включи снова, разрешив запрос Windows.", "WarnBrush"),
-                "waiting" => ("ГОТОВО К ЗАПИСИ", "Запись начнётся сама, когда запустится CS2.", "AccentBrush"),
-                _ => ("ЖДЁМ ВАТЕРМАРКУ", "Статус появится через пару секунд.", "DimBrush"),
+                "recording" => ("Идёт запись", state.Detail, "OkBrush"),
+                "no-fps" => ("Запись не идёт", state.Detail + " Выключи ватермарку и включи снова, разрешив запрос Windows.", "WarnBrush"),
+                "waiting" => ("Готово к записи", "Запись начнётся сама, когда запустится CS2.", "OkBrush"),
+                _ => ("Ждём ватермарку", "Статус появится через пару секунд.", "DimBrush"),
             };
         StateTitle.Text = title;
         StateDetail.Text = detail;
@@ -63,7 +63,7 @@ public partial class SessionsView : UserControl
 
         var last = all[0];
         var previous = all.Count > 1 ? all[1] : null;
-        LastTitle.Text = $"ПОСЛЕДНЯЯ СЕССИЯ · {last.Start:dd.MM HH:mm} · {Duration(last.Minutes)} · {last.Preset.ToUpperInvariant()}";
+        LastTitle.Text = $"{last.Start:dd.MM в HH:mm}, {Duration(last.Minutes)}, {last.Preset}";
         AvgText.Text = $"{last.AvgFps:0}";
         LowText.Text = $"{last.Low1Fps:0}";
         CpuText.Text = Temp(last.CpuMaxTemp);
@@ -79,13 +79,13 @@ public partial class SessionsView : UserControl
     {
         if (before is not { } b)
         {
-            block.Text = "ПЕРВЫЙ ЗАМЕР";
+            block.Text = "первый замер";
             block.Foreground = (Brush)FindResource("DimBrush");
             return;
         }
-        double diff = now - b;
-        block.Text = $"{(diff >= 0 ? "+" : "−")}{Math.Abs(diff):0} К ПРОШЛОЙ";
-        block.Foreground = (Brush)FindResource(diff >= 0 ? "AccentBrush" : "DangerBrush");
+        double diff = Math.Round(now) - Math.Round(b);
+        block.Text = diff == 0 ? "как в прошлой" : $"{(diff > 0 ? "+" : "−")}{Math.Abs(diff):0} к прошлой";
+        block.Foreground = (Brush)FindResource(diff == 0 ? "MutedBrush" : diff > 0 ? "OkBrush" : "DangerBrush");
     }
 
     static string Temp(double? c) => c is { } v ? $"{v:0}°" : "—";

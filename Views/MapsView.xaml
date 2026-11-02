@@ -1,8 +1,9 @@
 <UserControl x:Class="CS2Optimizer.Views.MapsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:CS2Optimizer.Views"
              Loaded="OnLoaded">
-    <Grid Margin="48,6,48,28">
+    <Grid Margin="44,0,44,24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -10,35 +11,32 @@
         </Grid.RowDefinitions>
 
         <DockPanel>
-            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,0,4">
-                <TextBlock Text="ПОДПИСИ" Style="{StaticResource Label}" Margin="0,0,10,6"/>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Bottom">
+                <TextBlock Text="Подписи" Style="{StaticResource ColHead}" Margin="0,0,10,6"/>
                 <RadioButton x:Name="LangRu" Style="{StaticResource Chip}" GroupName="lang" Content="RU" IsChecked="True" Checked="Lang_Checked"/>
-                <RadioButton x:Name="LangEn" Style="{StaticResource Chip}" GroupName="lang" Content="EN" Checked="Lang_Checked"/>
+                <RadioButton x:Name="LangEn" Style="{StaticResource Chip}" GroupName="lang" Content="EN" Checked="Lang_Checked" Margin="0,0,0,6"/>
             </StackPanel>
-            <StackPanel>
-                <TextBlock Text="08 / КАРТЫ" Style="{StaticResource Eyebrow}"/>
-                <TextBlock Text="Позиции на картах" Style="{StaticResource H1}"/>
-            </StackPanel>
+            <TextBlock Text="КАРТЫ" Style="{StaticResource H1}"/>
         </DockPanel>
 
-        <DockPanel Grid.Row="1" Margin="0,22,0,16">
-            <Grid DockPanel.Dock="Right" Width="240" VerticalAlignment="Top">
+        <DockPanel Grid.Row="1" Margin="0,16,0,14">
+            <Grid DockPanel.Dock="Right" Width="196" VerticalAlignment="Top">
                 <TextBox x:Name="SearchBox" Style="{StaticResource Field}" FontSize="13" TextChanged="Search_Changed"/>
                 <TextBlock x:Name="SearchHint" Text="Найти: банан, окно, long…" Style="{StaticResource Muted}"
-                           IsHitTestVisible="False" Margin="12,0,0,0" VerticalAlignment="Center"/>
+                           IsHitTestVisible="False" Margin="13,0,0,0" VerticalAlignment="Center"/>
             </Grid>
-            <WrapPanel x:Name="MapHost" VerticalAlignment="Center"/>
+            <WrapPanel x:Name="MapHost" VerticalAlignment="Center" Margin="0,0,16,0"/>
         </DockPanel>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="28"/>
+                <ColumnDefinition Width="24"/>
                 <ColumnDefinition Width="290"/>
             </Grid.ColumnDefinitions>
 
             <!-- Radar -->
-            <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CornerRadius="4" Background="#0A0A0B" ClipToBounds="True">
+            <ui:Plate BorderBrush="{StaticResource LineBrush}" BorderThickness="1" CutTopRight="20" Background="{StaticResource FieldBrush}" ClipContent="True">
                 <Grid>
                     <Rectangle Fill="{StaticResource GridBrush}"/>
                     <!-- Frame = the cropped square of the radar; Board = the full 1024² radar shifted inside it -->
@@ -55,33 +53,32 @@
                     <StackPanel x:Name="LayerHost" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12" Visibility="Collapsed"/>
                     <TextBlock x:Name="StatusText" Style="{StaticResource Muted}" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"
                                TextAlignment="Center" MaxWidth="360"/>
-                    <TextBlock Text="КОЛЕСО — ЗУМ · ТЯНИ — ДВИГАТЬ · ДВОЙНОЙ КЛИК — СБРОС" Style="{StaticResource Label}" HorizontalAlignment="Left"
-                               VerticalAlignment="Bottom" Margin="12,0,0,10" IsHitTestVisible="False"/>
-                    <TextBlock Text="ИЗ ФАЙЛОВ ТВОЕЙ CS2" Style="{StaticResource Label}" HorizontalAlignment="Right"
-                               VerticalAlignment="Bottom" Margin="0,0,12,10" IsHitTestVisible="False"/>
+                    <TextBlock Text="Колесо: зум. Тяни: двигать. Двойной клик: сброс." FontSize="11.5" Foreground="{StaticResource DimBrush}" HorizontalAlignment="Left"
+                               VerticalAlignment="Bottom" Margin="14,0,0,10" IsHitTestVisible="False"/>
                 </Grid>
-            </Border>
+            </ui:Plate>
 
             <!-- Side panel: selected place + list -->
             <DockPanel Grid.Column="2">
                 <StackPanel DockPanel.Dock="Top">
-                    <TextBlock x:Name="MapTitle" Style="{StaticResource Num}" FontSize="40" FontWeight="Light"/>
-                    <TextBlock x:Name="MapSub" Style="{StaticResource Label}" Margin="0,2,0,16"/>
+                    <TextBlock x:Name="MapTitle" Style="{StaticResource H1}" FontSize="44" LineHeight="46"/>
+                    <TextBlock x:Name="MapSub" Style="{StaticResource ColHead}" HorizontalAlignment="Left" Margin="0,0,0,14"/>
 
-                    <Border x:Name="InfoCard" BorderBrush="{StaticResource AccentBrush}" BorderThickness="1,0,0,0" Padding="14,2,0,2" Margin="0,0,0,18" Visibility="Collapsed">
+                    <ui:Plate x:Name="InfoCard" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource AccentBrush}" BorderThickness="1" CutTopRight="12"
+                              Padding="14,11" Margin="0,0,0,16" Visibility="Collapsed">
                         <StackPanel>
-                            <TextBlock x:Name="InfoEn" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap"/>
-                            <TextBlock x:Name="InfoRu" FontSize="13" Foreground="{StaticResource AccentBrush}" Margin="0,3,0,0" TextWrapping="Wrap"/>
-                            <TextBlock x:Name="InfoSlang" Style="{StaticResource Label}" Margin="0,8,0,0" TextWrapping="Wrap"/>
-                            <TextBlock x:Name="InfoDesc" Style="{StaticResource Muted}" Margin="0,6,0,0"/>
+                            <TextBlock x:Name="InfoEn" Style="{StaticResource Section}" Margin="0" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="InfoRu" FontSize="13" Foreground="{StaticResource AccentBrush}" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                            <TextBlock x:Name="InfoSlang" Style="{StaticResource Muted}" Margin="0,6,0,0"/>
+                            <TextBlock x:Name="InfoDesc" Style="{StaticResource Muted}" Margin="0,4,0,0"/>
                         </StackPanel>
-                    </Border>
+                    </ui:Plate>
 
-                    <WrapPanel Margin="0,0,0,8">
+                    <WrapPanel Margin="0,0,0,6">
                         <RadioButton x:Name="ModeZones" Style="{StaticResource Chip}" GroupName="mode" Content="Зоны игры" IsChecked="True" Checked="Mode_Checked"/>
                         <RadioButton x:Name="ModeBook" Style="{StaticResource Chip}" GroupName="mode" Content="Колауты игроков" Checked="Mode_Checked"/>
                     </WrapPanel>
-                    <TextBlock x:Name="ListTitle" Text="ВСЕ ЗОНЫ" Style="{StaticResource Label}" Margin="0,0,0,6"/>
+                    <TextBlock x:Name="ListTitle" Text="Все зоны" Style="{StaticResource ColHead}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="0,0,0,6"/>
                     <Rectangle Style="{StaticResource Hairline}"/>
                 </StackPanel>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">

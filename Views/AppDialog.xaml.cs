@@ -33,7 +33,7 @@ public partial class AppDialog : Window
             Items.Visibility = Visibility.Visible;
         }
 
-        Eyebrow.Text = danger ? "ВНИМАНИЕ" : cancel == null ? "CS2/OPT" : "ПОДТВЕРЖДЕНИЕ";
+        Eyebrow.Text = danger ? "Внимание" : cancel == null ? "CS2 Optimizer" : "Подтверждение";
         var accent = (Brush)FindResource(danger ? "DangerBrush" : "AccentBrush");
         Eyebrow.Foreground = accent;
         Strip.Fill = accent;

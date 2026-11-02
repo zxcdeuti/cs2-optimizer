@@ -1,82 +1,87 @@
 <UserControl x:Class="CS2Optimizer.Views.SessionsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:CS2Optimizer.Views"
              Loaded="OnLoaded" Unloaded="OnUnloaded">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="48,6,48,48">
-            <TextBlock Text="10 / ЗАМЕРЫ FPS" Style="{StaticResource Eyebrow}"/>
-            <TextBlock Text="Сессии в игре" Style="{StaticResource H1}"/>
+        <StackPanel Margin="44,0,44,44" MaxWidth="1160" HorizontalAlignment="Stretch">
+            <TextBlock Text="ЗАМЕРЫ FPS" Style="{StaticResource H1}"/>
             <TextBlock Text="Каждый запуск CS2 записывается сам, пока работает ватермарка с правами администратора. Так видно, дала ли настройка прирост."
                        Style="{StaticResource Lead}"/>
-            <Rectangle Style="{StaticResource PageRule}"/>
 
-            <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,16" Margin="0,0,0,24">
+            <ui:Plate Style="{StaticResource SlabPad}" Padding="20,14">
                 <DockPanel>
                     <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Открыть журнал" Click="OpenLog_Click" VerticalAlignment="Center"/>
-                    <Rectangle x:Name="StateDot" Width="8" Height="8" Fill="{StaticResource DimBrush}" VerticalAlignment="Center"/>
+                    <Rectangle x:Name="StateDot" Width="9" Height="9" Fill="{StaticResource DimBrush}" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                        <Rectangle.RenderTransform>
+                            <RotateTransform Angle="45"/>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
                     <StackPanel Margin="14,0,16,0" VerticalAlignment="Center">
-                        <TextBlock x:Name="StateTitle" Style="{StaticResource Label}" Foreground="{StaticResource TextBrush}" FontSize="12"/>
-                        <TextBlock x:Name="StateDetail" Style="{StaticResource Muted}" Margin="0,3,0,0"/>
+                        <TextBlock x:Name="StateTitle" Style="{StaticResource RowTitle}"/>
+                        <TextBlock x:Name="StateDetail" Style="{StaticResource Muted}" Margin="0,2,0,0"/>
                     </StackPanel>
                 </DockPanel>
-            </Border>
+            </ui:Plate>
 
-            <TextBlock x:Name="EmptyText" Style="{StaticResource Muted}" FontSize="14" LineHeight="21" MaxWidth="640" HorizontalAlignment="Left"
+            <TextBlock x:Name="EmptyText" Style="{StaticResource Muted}" FontSize="14" LineHeight="21" MaxWidth="640" HorizontalAlignment="Left" Margin="0,24,0,0"
                        Text="Пока замеров нет. Сыграй хотя бы минуту с включённой ватермаркой: результат появится здесь и будет обновляться каждую минуту игры."/>
 
             <StackPanel x:Name="Body" Visibility="Collapsed">
-                <TextBlock x:Name="LastTitle" Style="{StaticResource Label}" Margin="0,0,0,14"/>
+                <TextBlock Text="Последняя игра" Style="{StaticResource Section}" Margin="0,30,0,2"/>
+                <TextBlock x:Name="LastTitle" Style="{StaticResource Muted}" Margin="0,0,0,12"/>
                 <WrapPanel>
-                    <StackPanel Margin="0,0,56,12">
-                        <TextBlock Text="СРЕДНИЙ FPS" Style="{StaticResource Label}"/>
-                        <TextBlock x:Name="AvgText" Style="{StaticResource Num}" FontSize="56" FontWeight="Light" Foreground="{StaticResource AccentBrush}"/>
-                        <TextBlock x:Name="AvgDelta" Style="{StaticResource Label}" FontSize="12"/>
+                    <StackPanel Margin="0,0,52,12">
+                        <TextBlock Text="Средний FPS" Style="{StaticResource ColHead}" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="AvgText" Style="{StaticResource BigNum}" FontSize="68" LineHeight="70" Foreground="{StaticResource AccentBrush}"/>
+                        <TextBlock x:Name="AvgDelta" Style="{StaticResource Label}" HorizontalAlignment="Left"/>
                     </StackPanel>
-                    <StackPanel Margin="0,0,56,12">
-                        <TextBlock Text="1% LOW" Style="{StaticResource Label}"/>
-                        <TextBlock x:Name="LowText" Style="{StaticResource Num}" FontSize="56" FontWeight="Light"/>
-                        <TextBlock x:Name="LowDelta" Style="{StaticResource Label}" FontSize="12"/>
+                    <StackPanel Margin="0,0,52,12">
+                        <TextBlock Text="1% low" Style="{StaticResource ColHead}" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="LowText" Style="{StaticResource BigNum}" FontSize="68" LineHeight="70"/>
+                        <TextBlock x:Name="LowDelta" Style="{StaticResource Label}" HorizontalAlignment="Left"/>
                     </StackPanel>
-                    <StackPanel Margin="0,0,56,12">
-                        <TextBlock Text="МАКС. CPU" Style="{StaticResource Label}"/>
-                        <TextBlock x:Name="CpuText" Style="{StaticResource Num}" FontSize="56" FontWeight="Light"/>
+                    <StackPanel Margin="0,0,52,12">
+                        <TextBlock Text="Макс. CPU" Style="{StaticResource ColHead}" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="CpuText" Style="{StaticResource BigNum}" FontSize="68" LineHeight="70"/>
                     </StackPanel>
                     <StackPanel Margin="0,0,0,12">
-                        <TextBlock Text="МАКС. GPU" Style="{StaticResource Label}"/>
-                        <TextBlock x:Name="GpuText" Style="{StaticResource Num}" FontSize="56" FontWeight="Light"/>
+                        <TextBlock Text="Макс. GPU" Style="{StaticResource ColHead}" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="GpuText" Style="{StaticResource BigNum}" FontSize="68" LineHeight="70"/>
                     </StackPanel>
                 </WrapPanel>
 
-                <DockPanel Margin="0,28,0,8">
+                <DockPanel Margin="0,22,0,10">
                     <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Очистить историю" Click="Clear_Click"/>
-                    <TextBlock Text="ИСТОРИЯ" Style="{StaticResource Label}"/>
+                    <TextBlock Text="История" Style="{StaticResource Section}" Margin="0" VerticalAlignment="Center"/>
                 </DockPanel>
-                <Rectangle Style="{StaticResource Hairline}"/>
-                <ItemsControl x:Name="History">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,11">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150"/>
-                                        <ColumnDefinition Width="80"/>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="110"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Start, StringFormat={}{0:dd.MM.yyyy HH:mm}}" FontSize="13"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding Duration}" FontSize="13" Foreground="{StaticResource MutedBrush}"/>
-                                    <TextBlock Grid.Column="2" Text="{Binding Avg}" Style="{StaticResource Num}" FontSize="14"/>
-                                    <TextBlock Grid.Column="3" Text="{Binding Low}" Style="{StaticResource Num}" FontSize="14"/>
-                                    <TextBlock Grid.Column="4" Text="{Binding Temps}" FontSize="13" Foreground="{StaticResource MutedBrush}"/>
-                                    <TextBlock Grid.Column="5" Text="{Binding Preset}" FontSize="13" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis"/>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <TextBlock Style="{StaticResource Muted}" Margin="0,12,0,0"
+                <ui:Plate Style="{StaticResource Slab}">
+                    <ItemsControl x:Name="History" Margin="0,0,0,-1">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource Row}" Padding="0,11">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="140"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Start, StringFormat={}{0:dd.MM.yyyy HH:mm}}" FontSize="13"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Duration}" FontSize="13" Foreground="{StaticResource MutedBrush}"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Avg}" Style="{StaticResource Num}" FontSize="14"/>
+                                        <TextBlock Grid.Column="3" Text="{Binding Low}" Style="{StaticResource Num}" FontSize="14"/>
+                                        <TextBlock Grid.Column="4" Text="{Binding Temps}" FontSize="13" Foreground="{StaticResource MutedBrush}"/>
+                                        <TextBlock Grid.Column="5" Text="{Binding Preset}" FontSize="13" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ui:Plate>
+                <TextBlock Style="{StaticResource Muted}" Margin="0,12,0,0" MaxWidth="660" HorizontalAlignment="Left"
                            Text="Считается время, пока CS2 на переднем плане, вместе с меню и разминкой. Сравнивай сессии с похожей нагрузкой: матч с матчем, а не с меню."/>
             </StackPanel>
         </StackPanel>
